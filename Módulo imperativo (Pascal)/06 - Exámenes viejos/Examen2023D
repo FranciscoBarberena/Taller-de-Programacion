@@ -1,0 +1,187 @@
+
+
+{Aerolíneas Argentinas necesita procesar los pasajes vendidos durante 2023.
+De cada pasaje se conoce el código de vuelo, código del cliente, código del destino, monto del pasaje y mes de venta.
+
+a) Implementar un módulo que lea pasajes, genere y retorne una estructura adecuada para la búsqueda por código de ciudad destino, donde cada código de ciudad destino debe tener almacenado en una lista de pasajes (código de vuelo, cliente, monto del pasaje).
+La lectura finaliza con el monto de pasaje 0.
+(Se sugiere utilizar el módulo leerPasaje).
+
+b) Implementar un módulo que reciba la estructura generada en a) y retorne el código de ciudad destino con mayor cantidad de pasajes vendidos.
+
+c) Realizar un módulo que reciba la estructura generada en a) y un código de ciudad destino, y retorne la cantidad de pasajes vendidos para ese destino.}
+
+Program Examen2023D;
+
+Const 
+  fin = 0;
+Type 
+  pasaje = Record
+    vuelo: integer;
+    cliente: integer;
+    destino: integer;
+    mes: integer;
+    monto: real;
+  End;
+  pasaje_reducido = Record
+    vuelo: integer;
+    cliente: integer;
+    monto: real;
+  End;
+  lista = ^nodoLista;
+  nodoLista = Record
+    dato : pasaje_reducido;
+    sig : lista;
+  End;
+  tipoArbol = Record
+    destino : integer;
+    listaDestino : lista;
+  End;
+  tree = ^nodo;
+  nodo = Record
+    dato : tipoArbol;
+    hi : tree;
+    hd : tree;
+  End;
+
+
+Procedure leerPasaje(Var p : pasaje);
+Begin
+  p.monto := Random(10) / (Random(10) + 1);
+  If (p.monto <> fin) Then
+    Begin
+      p.vuelo := Random(7000);
+      p.cliente := Random(1000) + 1;
+      p.destino := Random(50) + 1;
+      p.mes := Random(12) + 1;
+    End;
+End;
+
+Procedure CrearRegistro(p : pasaje; Var pr : pasaje_reducido);
+Begin
+  pr.cliente := p.cliente;
+  pr.vuelo := p.vuelo;
+  pr.monto := p.monto;
+End;
+
+Procedure AgregarAdelante(Var l : lista; pr : pasaje_reducido);
+
+Var 
+  aux : lista;
+Begin
+  new(aux);
+  aux^.dato := pr;
+  aux^.sig := l;
+  l := aux;
+End;
+
+Procedure Agregar (Var t : tree; p : pasaje);
+
+Var 
+  pr: pasaje_reducido;
+Begin
+  If (t=Nil) Then
+    Begin
+      new(t);
+      t^.dato.destino := p.destino;
+      t^.dato.listaDestino := Nil;
+      CrearRegistro(p,pr);
+      AgregarAdelante(t^.dato.listaDestino,pr);
+      t^.hi := Nil;
+      t^.hd := Nil;
+    End
+  Else If (p.destino<t^.dato.destino) Then Agregar(t^.hi,p)
+  Else If (p.destino>t^.dato.destino) Then Agregar(t^.hd,p)
+  Else
+    Begin
+      CrearRegistro(p,pr);
+      AgregarAdelante(t^.dato.listaDestino,pr);
+    End;
+End;
+
+Procedure CargarArbol(Var t : tree);
+
+Var p : pasaje;
+Begin
+  t := Nil;
+  leerPasaje(p);
+  While (p.monto <> fin) Do
+    Begin
+      Agregar(t,p);
+      leerPasaje(p);
+    End;
+End;
+
+Procedure ImprimirLista(l:lista);
+Begin
+  While (l<>Nil) Do
+    Begin
+      writeln('Monto: ',l^.dato.monto:0:2);
+      writeln('Cliente: ',l^.dato.cliente);
+      writeln('Vuelo: ',l^.dato.vuelo);
+      l := l^.sig;
+    End;
+End;
+
+Procedure ImprimirArbol(t:tree);
+Begin
+  If (t<>Nil) Then
+    Begin
+      ImprimirArbol(t^.hi);
+      writeln('CODIGO DE DESTINO: ',t^.dato.destino);
+      ImprimirLista(t^.dato.listaDestino);
+      ImprimirArbol(t^.hd);
+    End;
+End;
+{b) Implementar un módulo que reciba la estructura generada en a) y retorne el código de ciudad destino con mayor cantidad de pasajes vendidos.}
+
+Function ContarLista(l : lista) : integer;
+Begin
+  If (l=Nil) Then
+    ContarLista := 0
+  Else contarLista := 1 + contarLista(l^.sig);
+End;
+
+Procedure encontrarMaximo (t:tree; Var maxCode : integer; Var maxCant : integer);
+Begin
+  If (t<>Nil) Then
+    Begin
+      encontrarMaximo(t^.hi,maxCode,maxCant);
+      If (ContarLista(t^.dato.listaDestino)>maxCant) Then
+        Begin
+          maxCode := t^.dato.destino;
+          maxCant := ContarLista(t^.dato.listaDestino);
+        End;
+      encontrarMaximo(t^.hd,maxCode,maxCant);
+    End;
+End;
+{c) Realizar un módulo que reciba la estructura generada en a) y un código de ciudad destino, y retorne la cantidad de pasajes vendidos para ese destino.}
+Function cantidadDestino (t : tree; destino : integer) : integer;
+Begin
+  If (t=Nil) Then
+    cantidadDestino := 0
+  Else  If (destino<t^.dato.destino) Then cantidadDestino := cantidadDestino(t^.hi,destino)
+  Else  If (destino>t^.dato.destino) Then cantidadDestino := cantidadDestino(t^.hd,destino)
+  Else cantidadDestino := ContarLista(t^.dato.listaDestino);
+End;
+
+Var 
+  t : tree;
+  maxCant,destino,maxCode : integer;
+
+Begin
+  randomize;
+  CargarArbol(t);
+  If (t<>Nil) Then
+    Begin
+      maxCode := 0;
+      maxCant := 0;
+      ImprimirArbol(t);
+      encontrarMaximo(t,maxCode,maxCant);
+      writeln('El codigo de destino con mayor cantidad de pasajes fue ',maxCode,' con ', maxCant);
+      write('Ingresar codigo a buscar: ');
+      readln(destino);
+      writeln('El codigo de destino ',destino,' tuvo ',cantidadDestino(t,destino), ' pasajes vendidos.');
+    End
+  Else writeln('Error: arbol vacio');
+End.
