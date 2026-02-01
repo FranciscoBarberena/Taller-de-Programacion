@@ -1,0 +1,94 @@
+{Existen dos robots productores que recorren las avenidas 5 y 10 respectivamente, juntando todos los papeles de su avenida. A lo largo del recorrido, cada vez que juntan 5 papeles, los depositan en la esquina (50,50). Ademas existen dos robots consumidores que intentan tomar una cantidad aleatoria de papeles (entre 2 y 5) de la esquina (50,50) para depositarla en su esquina de origen. Si la esquina (50,50) no posee la cantidad de papeles requerida, vuelven a su esquina de origen sin tomar ningun papel. Si luego de 8 intentos seguidos un consumidor detecta que la
+esquina (50,50) no tiene papeles suficientes para juntar, entonces asumira que los productores ya han completado su trabajo y por lo tanto terminara su tarea tambien. Los consumidores inician en las esquinas (11,1) y (12,1) respectivamente.}
+programa Actividad2
+procesos
+  proceso vaciarDePapeles(ES cant : numero; E miCa : numero; E miAv : numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      cant := cant + 1
+      si (cant = 5)
+        miCa := PosCa
+        dejarEnDeposito(miAv,miCa)
+        cant := 0
+  fin
+  proceso dejarEnDeposito(E miAv : numero; E miCa : numero)
+  comenzar
+    BloquearEsquina(50,50)
+    Pos(50,50)
+    repetir 5
+      depositarPapel
+    Pos(miAv,miCa)
+    LiberarEsquina(50,50)
+  fin
+  proceso consumirDeposito (E papelesPorTomar : numero; ES encontre : boolean; E av : numero; E ca : numero)
+  variables
+    papelesEnDeposito : numero
+  comenzar
+    papelesEnDeposito := 0
+    BloquearEsquina (50,50)
+    Pos(50,50)
+    mientras((HayPapelEnLaEsquina)&(papelesEnDeposito < papelesPorTomar))
+      tomarPapel
+      papelesEnDeposito := papelesEnDeposito + 1
+    si (papelesEnDeposito < papelesPorTomar)
+      repetir papelesEnDeposito 
+        depositarPapel
+      encontre := F
+    sino
+      encontre := V
+    Pos(av,ca)
+    LiberarEsquina(50,50)
+  fin
+areas
+  area50: AreaC (50,50,50,50)
+  av5: AreaP(5,1,5,100)
+  av10: AreaP(10,1,10,100)
+  areaC1: AreaP (11,1,11,1)
+  areaC2: AreaP(12,1,12,1)
+robots
+  robot productor
+  variables
+    cant,miAv,miCa : numero
+  comenzar
+    miAv := PosAv
+    cant := 0
+    repetir 99
+      vaciarDePapeles(cant,miCa,miAv)
+      mover
+    vaciarDePapeles(cant,miCa,miAv)
+  fin
+  robot consumidor
+  variables
+    intentosFallidos,papelesPorTomar,miCa,miAv : numero
+    encontre : boolean
+  comenzar
+    miCa := PosCa
+    miAv := PosAv
+    intentosFallidos := 0
+    mientras (intentosFallidos < 8)
+      Random(papelesPorTomar,2,5)
+      consumirDeposito(papelesPorTomar,encontre,miAv,miCa)
+      si (encontre)
+        repetir papelesPorTomar
+          depositarPapel
+      sino
+        intentosFallidos := intentosFallidos + 1
+  fin
+variables
+  p1,p2: productor
+  c1,c2: consumidor
+comenzar
+  AsignarArea(p1,area50)
+  AsignarArea(p2,area50)
+  AsignarArea(c1,area50)
+  AsignarArea(c2,area50)
+  AsignarArea(p1,av5)
+  AsignarArea(p2,av10)
+  AsignarArea(c1,areaC1)
+  AsignarArea(c2,areaC2)
+  Iniciar(p1, 5,1)
+  Iniciar(p2, 10,1)
+  Iniciar(c1, 11,1)
+  Iniciar(c2, 12,1)
+fin
