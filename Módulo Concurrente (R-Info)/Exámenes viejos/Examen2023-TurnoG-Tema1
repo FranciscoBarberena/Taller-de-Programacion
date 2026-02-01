@@ -1,0 +1,126 @@
+{Tres robots papeleros deben realizar 4 escalones cada uno juntando todos los papeles a su paso, siguiendo un modelo de sincronizacion barrera en el cual un robot fiscalizador debera indicarles cuando deben avanzar con el siguiente escalon. Cada robot papelero calculara al inicio el tamano de su escalon de manera aleatoria, entre 1 y 3 para el alto, y entre 2 y 4 para el ancho. Cada vez que completen un lado de un escalon, deberan depositar todos los papeles juntados en el deposito ubicado en la esquina (99,99). Al finalizar, el fiscalizador debera juntar todos los papeles depositados por los papeleros en el deposito e informar la cantidad total de esquinas que vaciaron los papeleros (no se deben contabilizar las esquinas vacias originalmente). El fiscalizador inicia en la esquina (1,1), y los robots papeleros inician en las esquinas (2,1), (32,1) y (62,1) respectivamente.}
+programa Examen2023TurnoGTema1
+procesos
+  proceso izquierda
+  comenzar
+    repetir 3
+      derecha
+  fin
+  proceso dejarEnDeposito(ES papeles: numero)
+  variables
+    miAv,miCa : numero
+  comenzar
+    si (papeles <>0)
+      miAv := PosAv
+      miCa := PosCa
+      BloquearEsquina(99,99)
+      Pos(99,99)
+      repetir papeles
+        depositarPapel
+      Pos(miAv,miCa)
+      LiberarEsquina(99,99)
+      papeles := 0
+  fin
+  proceso limpiarDePapeles(ES p : numero; ES esquinasConPapeles : numero)
+  variables
+    aux : numero
+  comenzar
+    aux := p
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      p:=p+1
+    si (p <> aux)
+      esquinasConPapeles := esquinasConPapeles + 1
+  fin
+  proceso hacerLado(E long : numero; ES p : numero;ES total : numero; ES esquinasVaciadas : numero)
+  comenzar
+    repetir long - 1
+      mover
+      limpiarDePapeles(p,esquinasVaciadas)
+    total:= total + p
+  fin
+areas
+  area1: AreaP (2,1,15,9)
+  area3: AreaP (62,1,75,9)
+  area2: AreaP (32,1,45,9)
+  deposito: AreaC(99,99,99,99)
+  areaJefe: AreaP(1,1,1,1)
+  
+robots
+  robot papelero
+  variables
+    alto,ancho,papeles,esquinasVaciadas,total,ID : numero
+    seguir : boolean
+  comenzar
+    RecibirMensaje(ID,R_Jefe)
+    papeles := 0
+    esquinasVaciadas := 0
+    total := 0
+    Random(alto,1,3)
+    Random(ancho,2,4)
+    limpiarDePapeles(papeles,esquinasVaciadas)
+    repetir 4
+      hacerLado(alto,papeles,total,esquinasVaciadas)
+      dejarEnDeposito(papeles)
+      derecha
+      hacerLado(ancho,papeles,total,esquinasVaciadas)
+      dejarEnDeposito(papeles)
+      izquierda
+      EnviarMensaje(V,R_Jefe)
+      RecibirMensaje(seguir,R_Jefe)
+    EnviarMensaje(ID,R_Jefe)
+    EnviarMensaje(esquinasVaciadas,R_Jefe)
+    EnviarMensaje(total,R_Jefe)
+  fin
+  robot jefe
+  variables
+    ID,vaciadasAux,totalAux,total,vaciadas : numero
+    termino : boolean
+  comenzar
+    total := 0
+    vaciadas := 0
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+    repetir 4
+      repetir 3
+        RecibirMensaje(termino,*)
+      EnviarMensaje(V,r1)
+      EnviarMensaje(V,r2)
+      EnviarMensaje(V,r3)
+    repetir 3
+      RecibirMensaje (ID,*)
+      si (ID = 1)
+        RecibirMensaje(vaciadasAux,r1)
+        RecibirMensaje(totalAux,r1)
+      sino
+        si (ID = 2)
+          RecibirMensaje(vaciadasAux,r2)
+          RecibirMensaje(totalAux,r2)
+        sino
+          RecibirMensaje(vaciadasAux,r3)
+          RecibirMensaje(totalAux,r3)
+      total:= total + totalAux
+      vaciadas := vaciadas + vaciadasAux
+    Pos(99,99)
+    repetir total
+      tomarPapel
+    Informar(vaciadas)
+  fin
+variables
+  r1,r2,r3 : papelero
+  R_Jefe : jefe
+comenzar
+  AsignarArea(R_Jefe, areaJefe)
+  AsignarArea(R_Jefe, deposito)
+  AsignarArea(r1,area1)
+  AsignarArea(r2,area2)
+  AsignarArea(r3,area3)
+  AsignarArea(r1,deposito)
+  AsignarArea(r2,deposito)
+  AsignarArea(r3,deposito)
+  Iniciar(r1,2,1)
+  Iniciar(r2,32,1)
+  Iniciar(r3,62,1)
+  Iniciar(R_Jefe, 1,1)
+fin

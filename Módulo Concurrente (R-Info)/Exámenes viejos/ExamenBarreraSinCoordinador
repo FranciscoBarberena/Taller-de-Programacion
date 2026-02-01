@@ -1,0 +1,118 @@
+{Tres robots deben realizar 5 cuadrados cada uno, como se ejemplifica en la figura, juntando todas las flores que encuentran a su paso. El tamano de cada cuadrado sera determinado aleatoriamente entre 1 y 5 por cada robot. Al finalizar cada cuadrado, deberan esperar que los otros robots tambien finalicen para avanzar hacia el siguiente cuadrado, siguiendo el modelo de sincronizacion barrera sin coordinador. Una vez completados los 5 cuadrados, deberan depositar de a una todas las flores encontradas en la esquina (50,50).
+
+Los robots inician en las esquinas (1,1) y (8,1), y (15,1). Existe un robot coordinador, que inicia en (51,1), cuya unica tarea es asignar identificadores a cada robot.}
+programa ExamenBarreraSinCoordinador
+procesos
+  proceso limpiarDeFlores (ES f : numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      f := f + 1
+  fin
+  proceso hacerLado(E tamano : numero; ES f : numero)
+  comenzar
+    repetir tamano
+      mover
+      limpiarDeFlores(f)
+  fin
+  proceso hacerCuadrado(E tamano: numero; ES flores : numero)
+  comenzar
+    repetir 4
+      hacerLado(tamano,flores)
+      derecha
+  fin
+  proceso dejarEnDeposito(E f : numero)
+  variables
+    miAv,miCa : numero
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    repetir f
+      BloquearEsquina(50,50)
+      Pos(50,50)
+      depositarFlor
+      Pos(miAv,miCa)
+      LiberarEsquina(50,50)
+  fin
+areas
+  area1: AreaP (1,1,6,31)
+  area2: AreaP (8,1,13,31)
+  area3: AreaP(15,1,20,31)
+  deposito: AreaPC(50,50,50,50)
+  areaCoordinador: AreaP(51,1,51,1)
+robots
+  robot robot1
+  variables
+    seguir : boolean
+    tamano,flores,ID : numero
+  comenzar
+    flores := 0
+    RecibirMensaje(ID, R_Coordinador)
+    repetir 5
+      Random(tamano,1,5)
+      hacerCuadrado(tamano,flores)
+      EnviarMensaje(V,r2)
+      EnviarMensaje(V,r3)
+      RecibirMensaje(seguir,r2)
+      RecibirMensaje(seguir,r3)
+      Pos(PosAv,PosCa+tamano+1)
+    dejarEnDeposito(flores)
+  fin
+  robot robot2
+  variables
+    seguir : boolean
+    tamano,flores,ID : numero
+  comenzar
+    flores := 0
+    RecibirMensaje(ID, R_Coordinador)
+    repetir 5
+      Random(tamano,1,5)
+      hacerCuadrado(tamano,flores)
+      EnviarMensaje(V,r1)
+      EnviarMensaje(V,r3)
+      RecibirMensaje(seguir,r1)
+      RecibirMensaje(seguir,r3)
+      Pos(PosAv,PosCa+tamano+1)
+    dejarEnDeposito(flores)
+  fin
+  robot robot3
+  variables
+    seguir : boolean
+    tamano,flores,ID : numero
+  comenzar
+    flores := 0
+    RecibirMensaje(ID, R_Coordinador)
+    repetir 5
+      Random(tamano,1,5)
+      hacerCuadrado(tamano,flores)
+      EnviarMensaje(V,r2)
+      EnviarMensaje(V,r1)
+      RecibirMensaje(seguir,r2)
+      RecibirMensaje(seguir,r1)
+      Pos(PosAv,PosCa+tamano+1)
+    dejarEnDeposito(flores)
+  fin
+  robot coordinador
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+  fin
+variables
+  R_Coordinador: coordinador
+  r1 : robot1
+  r2: robot2
+  r3 : robot3
+comenzar
+  AsignarArea(R_Coordinador, areaCoordinador)
+  AsignarArea(r1,area1)
+  AsignarArea(r2,area2)
+  AsignarArea(r3,area3)
+  AsignarArea(r1,deposito)
+  AsignarArea(r2,deposito)
+  AsignarArea(r3,deposito)
+  Iniciar(r1,1,1)
+  Iniciar(r2,8,1)
+  Iniciar(r3,15,1)
+  Iniciar(R_Coordinador, 51,1)
+fin

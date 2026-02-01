@@ -1,0 +1,162 @@
+{Tres robots recolectores deben coordinarse para recolectar todos los papeles de la calle 2, desde la avenida 1 a la 63. Para ello, el primer robot realiza un tramo de 20 esquinas. Cuando termina avisa al segundo robot para que este realice el segundo tramo de 21 esquinas, y cuando termina avisa al tercer robot para que realice el tramo final de 22 esquinas. Ademas, luego de realizar cada tramo, los robots deben depositar de a uno todos los papeles juntados en la esquina (3,20).
+
+Una vez que los 3 recolectores han finalizado, un robot jefe debe avisar al robot que junto menos papeles durante su tramo, que recoja los papeles que fueron depositados en la esquina (3,20).
+
+Cada robot recolector inicia al comienzo de su tramo. El robot jefe inicia en la esquina (2,1).}
+programa Examen2025TurnoP
+procesos
+  proceso actualizarMinimo (E cantAux : numero; ES min : numero; ES minID : numero; E ID : numero)
+  comenzar
+    si (cantAux < min)
+      min := cantAux
+      minID := ID
+  fin
+  proceso limpiarDeposito (E total : numero)
+  comenzar
+    BloquearEsquina(3,20)
+    Pos(3,20)
+    repetir total
+      tomarPapel
+    LiberarEsquina(3,20)
+  fin
+  proceso limpiarDePapeles (ES p : numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      p := p + 1
+  fin
+  proceso recorrerPapeles(E cantEsquinas: numero; ES papeles : numero)
+  comenzar
+    limpiarDePapeles(papeles)
+    repetir cantEsquinas - 1
+      mover
+      limpiarDePapeles(papeles)
+  fin
+  proceso dejarPapelesEnDeposito(E papeles : numero)
+  variables
+    miAv,miCa : numero
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    repetir papeles
+      BloquearEsquina(3,20)
+      Pos(3,20)
+      depositarPapel
+      Pos(miAv,miCa)
+      LiberarEsquina(3,20)
+  fin
+areas
+  tramo1: AreaP (1,2,20,2)
+  tramo2: AreaP (21,2,41,2)
+  tramo3: AreaP (42,2,63,2)
+  deposito: AreaPC (3,20,3,20)
+  areaJefe: AreaP(2,1,2,1)
+robots
+  robot robot1
+  variables
+    papeles,total,ID : numero
+    termino : boolean
+  comenzar
+    RecibirMensaje(ID,R_Jefe)
+    papeles := 0
+    total := 0
+    derecha
+    recorrerPapeles(20,papeles)
+    EnviarMensaje(ID,R_Jefe)
+    EnviarMensaje(papeles, R_Jefe)
+    EnviarMensaje(V,r2)
+    dejarPapelesEnDeposito(papeles)
+    
+    RecibirMensaje(total,R_Jefe)
+    si (total <> 0)
+      limpiarDeposito(total)
+  fin
+  robot robot2
+  variables
+    papeles,total,ID : numero
+    termino : boolean
+  comenzar
+    RecibirMensaje(ID,R_Jefe)
+    papeles := 0
+    total := 0
+    derecha
+    RecibirMensaje(termino,r1)
+    recorrerPapeles(21,papeles)
+    EnviarMensaje(ID,R_Jefe)
+    EnviarMensaje(papeles, R_Jefe)
+    EnviarMensaje(V,r3)
+    dejarPapelesEnDeposito(papeles)
+    RecibirMensaje(total,R_Jefe)
+    si (total <> 0)
+      limpiarDeposito(total)
+  fin
+  robot robot3
+  variables
+    papeles,total,ID : numero
+    termino : boolean
+  comenzar
+    RecibirMensaje(ID,R_Jefe)
+    papeles := 0
+    total := 0
+    derecha
+    RecibirMensaje(termino,r2)
+    recorrerPapeles(22,papeles)
+    dejarPapelesEnDeposito(papeles)
+    EnviarMensaje(ID,R_Jefe)
+    EnviarMensaje(papeles, R_Jefe)
+    RecibirMensaje(total,R_Jefe)
+    si (total <> 0)
+      limpiarDeposito(total)
+  fin
+  robot jefe
+  variables
+    min,minID,cantAux,total,ID : numero
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+    min := 9999
+    total := 0
+    repetir 3
+      RecibirMensaje(ID,*)
+      si (ID =1)
+        RecibirMensaje(cantAux,r1)
+      sino
+        si (ID = 2)
+          RecibirMensaje(cantAux,r2)
+        sino
+          RecibirMensaje(cantAux,r3)
+      actualizarMinimo(cantAux,min,minID,ID)
+      total := total + cantAux
+    si (minID = 1)
+      EnviarMensaje(total,r1)
+      EnviarMensaje(0,r2)
+      EnviarMensaje(0,r3)
+    sino
+      si (minID = 2)
+        EnviarMensaje(0,r1)
+        EnviarMensaje(total,r2)
+        EnviarMensaje(0,r3)
+      sino
+        EnviarMensaje(0,r1)
+        EnviarMensaje(0,r2)
+        EnviarMensaje(total,r3)
+  fin
+variables
+  R_Jefe: jefe
+  r1 : robot1
+  r2 : robot2
+  r3 : robot3
+comenzar
+  AsignarArea(R_Jefe, areaJefe)
+  AsignarArea(r1,tramo1)
+  AsignarArea(r2,tramo2)
+  AsignarArea(r3,tramo3)
+  AsignarArea(r1,deposito)
+  AsignarArea(r2,deposito)
+  AsignarArea(r3,deposito)
+  Iniciar(r1,1,2)
+  Iniciar(r2,21,2)
+  Iniciar(r3,42,2)
+  Iniciar(R_Jefe, 2,1)
+fin

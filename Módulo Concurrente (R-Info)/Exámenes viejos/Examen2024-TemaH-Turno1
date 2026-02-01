@@ -1,0 +1,128 @@
+{Tres robots recolectores deben realizar 3 cuadrados cada uno, como se ejemplifica en la figura, juntando todas las flores que encuentran a su paso. Inicialmente, un robot coordinador debera informar a cada recolector el tamano de los cuadrados a realizar (calculado aleatoriamente entre 1 y 6). Al completar cada cuadrado, los recolectores deberan depositar de a una en la esquina (50,50) las flores encontradas y luego avisar al coordinador para que recoja las flores recien depositadas. Una vez que todos los recolectores completaron sus tareas, el coordinador debera informar cual fue el que recolecto mas flores. Los recolectores inician en las esquinas (1,1) y (10,1), (20,1) y el coordinador en la esquina (100,100).}
+programa Examen2024-TemaH-Turno1
+procesos
+  proceso vaciarDeFlores(ES f : numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      f:=f+1
+  fin
+  proceso limpiarDeposito (E f : numero)
+  comenzar
+    BloquearEsquina(50,50)
+    Pos(50,50)
+    repetir f
+      tomarFlor
+    Pos(100,100)
+    LiberarEsquina(50,50)
+  fin
+  proceso hacerLado (E t: numero; ES f : numero)
+  comenzar
+    repetir t-1
+      vaciarDeFlores(f)
+      mover
+  fin
+  proceso hacerCuadrado(E tamano: numero; ES f : numero)
+  comenzar
+    repetir 4
+      hacerLado(tamano,f)
+      derecha
+    vaciarDeFlores(f)
+  fin
+  proceso dejarEnDeposito (E f : numero)
+  variables
+    caAux,avAux : numero
+  comenzar
+    caAux := PosCa
+    avAux := PosAv
+    repetir f
+      BloquearEsquina(50,50)
+      Pos(50,50)
+      depositarFlor
+      Pos(avAux,caAux)
+      LiberarEsquina(50,50)
+  fin
+areas
+  cuadrado1: AreaP (1,1,6,20)
+  cuadrado2: AreaP (10,1,15,20)
+  cuadrado3: AreaP (20,1,25,20)
+  areaCoordinador: AreaP(100,100,100,100)
+  deposito: AreaC(50,50,50,50)
+robots
+  robot recolector
+  variables
+    tamano,flores,ID,cuadradosRestantes : numero
+  comenzar
+    cuadradosRestantes := 3
+    RecibirMensaje(ID,R_Coordinador)
+    flores := 0
+    RecibirMensaje(tamano,R_Coordinador)
+    mientras(cuadradosRestantes <>0)
+      cuadradosRestantes := cuadradosRestantes - 1
+      hacerCuadrado(tamano,flores)
+      dejarEnDeposito(flores)
+      EnviarMensaje(ID,R_Coordinador)
+      EnviarMensaje(flores, R_Coordinador)
+      si (cuadradosRestantes <> 0)
+        Pos(PosAv,PosCa+tamano+1)
+        flores := 0
+  fin
+  robot coordinador
+  variables
+    tamano,f1,f2,f3,ID,max,maxID,cantFlores : numero
+  comenzar
+    max := 0
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+    f1 := 0
+    f2 := 0
+    f3 := 0
+    Random(tamano,1,6)
+    EnviarMensaje(tamano,r1)
+    Random(tamano,1,6)
+    EnviarMensaje(tamano,r2)
+    Random(tamano,1,6)
+    EnviarMensaje(tamano,r3)
+    repetir 9
+      RecibirMensaje(ID,*)
+      si (ID = 1)
+        RecibirMensaje(cantFlores,r1)
+        limpiarDeposito (cantFlores)
+        f1 := f1 + cantFlores
+        si (f1> max)
+          max := f1
+          maxID := 1
+      sino
+        si (ID = 2)
+          RecibirMensaje(cantFlores,r2)
+          limpiarDeposito (cantFlores)
+          f2 := f2 + cantFlores
+          si (f2> max)
+            max := f2
+            maxID := 2
+        sino
+          RecibirMensaje(cantFlores,r3)
+          limpiarDeposito (cantFlores)
+          f3 := f3 + cantFlores
+          si (f3> max)
+            max := f3
+            maxID := 3
+  fin
+variables
+  r1,r2,r3: recolector
+  R_Coordinador: coordinador
+comenzar
+  AsignarArea(r1, cuadrado1)
+  AsignarArea(r2, cuadrado2)
+  AsignarArea(r3, cuadrado3)
+  AsignarArea(r1, deposito)
+  AsignarArea(r2, deposito)
+  AsignarArea(r3, deposito)
+  AsignarArea(R_Coordinador, deposito)
+  AsignarArea(R_Coordinador, areaCoordinador)
+  Iniciar(r1,1,1)
+  Iniciar(r2,10,1)
+  Iniciar(r3,20,1)
+  Iniciar(R_Coordinador, 100,100)
+fin

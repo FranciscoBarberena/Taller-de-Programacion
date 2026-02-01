@@ -1,0 +1,135 @@
+{Tres robots floreros realizan N intentos cada uno para recolectar flores de esquinas del cuadrante comprendido entre (10,10) y (30,30). Cada florero determina de manera aleatoria (entre 2 y 5) la cantidad N de intentos a realizar. En cada intento, los floreros deben juntar todas las flores de una esquina dentro del cuadrante. Este trabajo debe realizarse siguiendo el modelo de Cliente/Servidor. La esquina debe ser solicitada a un robot Servidor, quien la genera de manera aleatoria. Una vez que el Servidor indica una esquina a un florero, el florero debera juntar las flores de a una de dicha esquina, depositarlas en (5,5) de a una, y a continuacion regresar a su esquina original.
+
+Cuando los tres floreros completan sus intentos, el robot Servidor debera juntar todas las flores de la esquina (5,5) e informar la cantidad total de flores juntadas.
+
+Los robots floreros inician en las esquinas (1,1), (2,1) y (3,1), y el Servidor en la esquina (5,1).}
+
+programa ExamenTurnoHTema1
+procesos
+  proceso juntarFloresEsquina(E av: numero; E ca : numero; ES flores : numero; E miAv : numero; E miCa : numero)
+  variables
+    seguir : boolean
+  comenzar
+    seguir := V
+    mientras(seguir)
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      si (HayFlorEnLaEsquina)
+        tomarFlor
+        flores := flores + 1
+        si (HayFlorEnLaEsquina = F)
+          seguir := F
+      sino
+        seguir := F
+      Pos(miAv,miCa)
+      LiberarEsquina(av,ca)
+  fin
+  proceso dejarFloresDeposito(E flores : numero;E miAv : numero; E miCa : numero )
+  comenzar
+    repetir flores
+      BloquearEsquina(5,5)
+      Pos(5,5)
+      depositarFlor
+      Pos(miAv,miCa)
+      LiberarEsquina(5,5)
+  fin
+  proceso limpiarDeposito
+  comenzar
+    BloquearEsquina(5,5)
+    Pos (5,5)
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+    Pos(5,1)
+    LiberarEsquina(5,5)
+  fin
+areas
+  cuadrante: AreaPC (10,10,30,30)
+  area1: AreaP(1,1,1,1)
+  area2: AreaP(2,1,2,1)
+  area3: AreaP(3,1,3,1)
+  areaServer: AreaP(5,1,5,1)
+  deposito: AreaC(5,5,5,5)
+robots
+  robot cliente
+  variables
+    av,ca,flores,n,miAv,miCa,ID,i,total: numero
+    todosTerminaron : boolean
+  comenzar
+    RecibirMensaje(ID,R_Server)
+    miAv := PosAv
+    miCa := PosCa
+    flores := 0
+    total := 0
+    Random(n,2,5)
+    i:=0
+    mientras(i<=n)
+      si (i<n)
+        EnviarMensaje(ID,R_Server)
+        RecibirMensaje(av,R_Server)
+        RecibirMensaje(ca,R_Server)
+        juntarFloresEsquina(av,ca,flores,miAv,miCa)
+        total := total + flores
+        dejarFloresDeposito(flores,miAv,miCa)
+        flores := 0
+      sino
+        EnviarMensaje(0,R_Server)
+      i := i + 1
+    RecibirMensaje(todosTerminaron,R_Server)
+    EnviarMensaje(total,R_Server)
+    Informar(total)
+  fin
+  robot servidor
+  variables
+    av,ca, total, floresAux, cantActivos,ID :numero
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+    total := 0
+    cantActivos := 3
+    mientras(cantActivos <> 0)
+      Random(av,10,30)
+      Random(ca,10,30)
+      RecibirMensaje(ID,*)
+      si (ID = 1)
+        EnviarMensaje(av,r1)
+        EnviarMensaje(ca,r1)
+      sino
+        si (ID = 2)
+          EnviarMensaje(av,r2)
+          EnviarMensaje(ca,r2)
+        sino
+          si (ID = 3)
+            EnviarMensaje(av,r3)
+            EnviarMensaje(ca,r3)
+          sino
+            cantActivos := cantActivos - 1
+    EnviarMensaje(V,r1)
+    EnviarMensaje(V,r2)
+    EnviarMensaje(V,r3)
+    repetir 3
+      RecibirMensaje(floresAux,*)
+      total := total + floresAux
+    limpiarDeposito
+    Informar("En total los clientes juntaron ",total)      
+  fin
+variables
+  r1,r2,r3 : cliente
+  R_Server: servidor
+comenzar
+  AsignarArea(R_Server, areaServer)
+  AsignarArea(R_Server,deposito)
+  AsignarArea(r1,cuadrante)
+  AsignarArea(r2,cuadrante)
+  AsignarArea(r3,cuadrante)
+  AsignarArea(r1,deposito)
+  AsignarArea(r2,deposito)
+  AsignarArea(r3,deposito)
+  AsignarArea(r1,area1)
+  AsignarArea(r2,area2)
+  AsignarArea(r3,area3)
+  Iniciar(r1,1,1)
+  Iniciar(r2,2,1)
+  Iniciar(r3,3,1)
+  Iniciar(R_Server, 5,1)
+fin
