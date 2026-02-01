@@ -1,0 +1,51 @@
+programa Actividad1a
+procesos
+  proceso vaciarFloresEsquina (ES cantidadFlores : numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantidadFlores := cantidadFlores + 1
+  fin
+  proceso limpiarDiezEsquinas(ES cantidadFlores: numero)
+  comenzar
+    repetir 9
+      vaciarFloresEsquina(cantidadFlores)
+      mover
+    vaciarFloresEsquina(cantidadFlores)
+  fin
+areas
+  ciudad: AreaC (1,1,100,100)
+robots
+  robot robot1
+  variables
+    cantidadFlores : numero
+    cantidadDelOtro : numero
+  comenzar
+    cantidadFlores := 0
+    limpiarDiezEsquinas(cantidadFlores)
+    EnviarMensaje(cantidadFlores, R_dos)
+    RecibirMensaje(cantidadDelOtro,R_dos)
+    si (cantidadFlores > cantidadDelOtro)
+      Informar(cantidadFlores-cantidadDelOtro)
+  fin
+  robot robot2
+  variables
+    cantidadFlores : numero
+    cantidadDelOtro : numero
+  comenzar
+    cantidadFlores := 0
+    limpiarDiezEsquinas(cantidadFlores)
+    EnviarMensaje(cantidadFlores, R_uno)
+    RecibirMensaje(cantidadDelOtro,R_uno)
+    si (cantidadFlores >= cantidadDelOtro)
+      Informar(cantidadFlores-cantidadDelOtro)
+  fin
+variables
+  R_uno: robot1
+  R_dos: robot2
+comenzar
+  AsignarArea(R_uno, ciudad)
+  AsignarArea(R_dos, ciudad)
+  Iniciar(R_uno, 1,1)
+  Iniciar(R_dos, 2,11)
+fin
