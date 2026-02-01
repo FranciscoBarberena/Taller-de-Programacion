@@ -1,0 +1,204 @@
+programa Actividad6a
+procesos
+  proceso avanzarX(ES t : numero;E x : numero)
+  comenzar
+    repetir x
+      vaciarDeFlores(t)
+      mover
+    vaciarDeFlores(t)
+  fin
+  proceso avanzarXTodo(ES tF : numero;ES tP : numero;E x : numero)
+  comenzar
+    repetir x
+      vaciarDeTodo(tF,tP)
+      mover
+    vaciarDeTodo(tF,tP)
+  fin
+  proceso avanzarEsquinaCompartida(E x : numero; E y : numero;ES t : numero)
+  comenzar
+    BloquearEsquina(x,y)
+    mover
+    vaciarDeFlores(t)
+    mover
+    LiberarEsquina(x,y)
+  fin
+  proceso avanzarEsquinaCompartidaTodo(E x : numero; E y : numero;ES tF : numero; ES tP : numero)
+  comenzar
+    BloquearEsquina(x,y)
+    mover
+    vaciarDeTodo(tF,tP)
+    mover
+    LiberarEsquina(x,y)
+  fin
+  proceso vaciarDePapeles (ES t : numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      t:=t+1
+  fin
+  proceso vaciarDeTodo(ES tF : numero; ES tP : numero)
+  comenzar
+    vaciarDeFlores(tF)
+    vaciarDePapeles(tP)
+  fin
+  proceso vaciarDeFlores (ES t : numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      t:=t+1
+  fin
+  proceso hacerCuadrado1(ES t : numero)
+  comenzar
+    avanzarX(t,6)
+    derecha
+    avanzarX(t,2)
+    avanzarEsquinaCompartida(5,8,t)
+    avanzarX(t,2)
+    derecha
+    avanzarX(t,2)
+    avanzarEsquinaCompartida(8,5,t)
+    avanzarX(t,2)
+    derecha
+    avanzarX(t,6)
+  fin
+  proceso hacerCuadrado2(ES tF : numero; ES tP : numero)
+  comenzar
+    avanzarXTodo(tF,tP,2)
+    avanzarEsquinaCompartidaTodo(5,8,tF,tP)
+    avanzarXTodo(tF,tP,6)
+    derecha
+    avanzarXTodo(tF,tP,10)
+    derecha
+    avanzarXTodo(tF,tP,10)
+    derecha
+    avanzarXTodo(tF,tP,6)
+    avanzarEsquinaCompartidaTodo(8,5,tF,tP)
+    avanzarXTodo(tF,tP,2)
+  fin
+  proceso posicionarseEnCalle(E ca : numero)
+  comenzar
+    Pos(1,ca)
+    derecha
+    derecha
+  fin
+  proceso recorrerCalleTodo (E flores : numero; E papeles : numero)
+  comenzar
+    mientras((PosAv<>100) & ((flores>0) | (papeles>0)))
+      dejarTodoYDecrementar(flores,papeles)
+      mover
+    si (PosAv = 100)
+      dejarTodoYDecrementar(flores,papeles)
+  fin
+  proceso dejarFlorYDecrementar(ES f : numero)
+  comenzar
+    si (f>0)
+      depositarFlor
+      f := f - 1
+  fin
+  proceso dejarPapelYDecrementar(ES p : numero)
+  comenzar
+    si (p>0)
+      depositarPapel
+      p := p - 1
+  fin
+  proceso dejarTodoYDecrementar(ES f : numero; ES p : numero)
+  comenzar
+    dejarFlorYDecrementar(f)
+    dejarPapelYDecrementar(p)
+  fin
+  proceso recorrerCalleFlores (E flores : numero)
+  comenzar
+    mientras((PosAv<>100) & (flores>0))
+      dejarFlorYDecrementar(flores)
+      mover
+    si (PosAv = 100)
+      dejarFlorYDecrementar(flores)
+  fin
+areas
+  lado1: AreaP(2,2,2,8)
+  lado2:AreaP(3,8,4,8)
+  lado2Compartido:AreaPC(5,8,5,8)
+  lado2Resto:AreaP(6,8,8,8)
+  lado3:AreaP(8,2,8,4)
+  lado3Compartido: AreaPC(8,5,8,5)
+  lado3Resto: AreaP(8,6,8,7)
+  lado4: AreaP(3,2,8,2)
+  
+  lado1a: AreaP(5,5,5,7)
+  lado1aResto: AreaP(5,9,5,15)
+  lado2a: AreaP(6,15,15,15)
+  lado3a: AreaP(15,5,15,15)
+  lado4a: AreaP(6,5,7,5)
+  lado4aResto: AreaP(9,5,15,5)
+  
+  areaFisca: AreaP(1,1,1,1)
+  calle20: AreaPC(1,20,100,20)
+  calle21: AreaPC(1,21,100,21)
+robots
+  robot robot1
+  variables
+    totalFlores,miCalle : numero
+  comenzar
+    totalFlores := 0
+    hacerCuadrado1(totalFlores)
+    EnviarMensaje(1,R_Fisca)
+    RecibirMensaje(miCalle,R_Fisca)
+    posicionarseEnCalle(miCalle)
+    recorrerCalleFlores(totalFlores)
+  fin
+  robot robot2
+  variables
+    totalFlores,totalPapeles,miCalle : numero
+  comenzar
+    totalFlores:=0
+    totalPapeles:= 0
+    hacerCuadrado2(totalFlores,totalPapeles)
+    EnviarMensaje(2,R_Fisca)
+    RecibirMensaje(miCalle,R_Fisca)
+    posicionarseEnCalle(miCalle)
+    recorrerCalleTodo(totalFlores,totalPapeles)
+  fin
+  robot fiscalizador
+  variables
+    ganador,perdedor : numero
+  comenzar
+    RecibirMensaje(ganador,*)
+    si (ganador = 1)
+      EnviarMensaje(20,r1)
+      RecibirMensaje(perdedor,r2)
+      EnviarMensaje(21,r2)
+    sino 
+      EnviarMensaje(r2,20)
+      RecibirMensaje(perdedor,r1)
+      EnviarMensaje(21,r1)
+  fin
+variables
+  r1: robot1
+  r2: robot2
+  R_Fisca: fiscalizador
+comenzar
+  AsignarArea(r1, lado1)
+  AsignarArea(r1, lado2)
+  AsignarArea(r1, lado2Compartido)
+  AsignarArea(r2, lado2Compartido)
+  AsignarArea(r1, lado2Resto)
+  AsignarArea(r1, lado3)
+  AsignarArea(r1, lado3Compartido)
+  AsignarArea(r2, lado3Compartido)
+  AsignarArea(r1, lado3Resto)
+  AsignarArea(r1, lado4)
+  AsignarArea(r1, calle20)
+  AsignarArea(r1, calle21)
+  AsignarArea(r2,lado1a)
+  AsignarArea(r2,lado1aResto)
+  AsignarArea(r2,lado2a)
+  AsignarArea(r2,lado3a)
+  AsignarArea(r2,lado4a)
+  AsignarArea(r2,lado4aResto)
+  AsignarArea(r2,calle20)
+  AsignarArea(r2,calle21)
+  AsignarArea(R_Fisca,areaFisca)
+  Iniciar(r1, 2,2)
+  Iniciar(r2,5,5)
+  Iniciar(R_Fisca,1,1)
+fin

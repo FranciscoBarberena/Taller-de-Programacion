@@ -1,0 +1,98 @@
+programa Actividad3
+procesos
+  proceso AccederEsquina(E numAv: numero; E numCa: numero; ES flores : numero; ES seguir : boolean)
+  comenzar
+    Pos(numAv, numCa)
+    si (HayFlorEnLaEsquina)
+      tomarFlor
+      flores := flores + 1
+    sino
+      seguir:=F
+  fin
+areas
+  areaRecolectores: AreaPC (2,2,10,10)
+  areaJefe: AreaP(1,1,1,1)
+  areaR1: AreaP(2,1,2,1)
+  areaR2: AreaP(3,1,3,1)
+  areaR3: AreaP(4,1,4,1)
+  areaR4: AreaP(5,1,5,1)
+robots
+  robot recolector
+  variables
+    av,ca,avIni,caIni,ID,flores : numero
+    seguir : boolean
+  comenzar
+    avIni := PosAv
+    caIni := PosCa
+    flores := 0
+    seguir := V
+    RecibirMensaje(ID, R_Jefe)
+    RecibirMensaje(av, R_Jefe)
+    RecibirMensaje(ca, R_Jefe)
+    mientras(seguir)
+      BloquearEsquina(av,ca)
+      AccederEsquina(av,ca,flores, seguir)
+      Pos(avIni,caIni)
+      LiberarEsquina(av,ca)
+    EnviarMensaje(ID,R_Jefe)
+    EnviarMensaje(flores,R_Jefe)
+  fin
+  robot jefe
+  variables
+    seguir: boolean
+    informanteAux,av,ca,cantAux,max,informanteMax : numero
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+    EnviarMensaje(4,r4)
+    Random(av,2,10)
+    Random(ca,2,10)
+    EnviarMensaje(av,r1)
+    EnviarMensaje(av,r2)
+    EnviarMensaje(av,r3)
+    EnviarMensaje(av,r4)
+    EnviarMensaje(ca,r1)
+    EnviarMensaje(ca,r2)
+    EnviarMensaje(ca,r3)
+    EnviarMensaje(ca,r4)
+    max := 0
+    repetir 4
+      RecibirMensaje(informanteAux,*)
+      si (informanteAux = 1)
+        RecibirMensaje(cantAux,r1)
+      sino
+        si (informanteAux = 2)
+          RecibirMensaje(cantAux,r2)
+        sino
+          si (informanteAux = 3)
+            RecibirMensaje(cantAux,r3)
+          sino
+            RecibirMensaje(cantAux,r4)
+      si (cantAux>max)
+        max:= cantAux
+        informanteMax := informanteAux
+    Informar("El Robot ganador fue el ",informanteMax)
+  fin
+variables
+  r1: recolector
+  r2: recolector
+  r3: recolector
+  r4: recolector
+  R_Jefe: jefe
+comenzar
+  AsignarArea(r1,areaRecolectores)
+  AsignarArea(r2,areaRecolectores)
+  AsignarArea(r3,areaRecolectores)
+  AsignarArea(r4,areaRecolectores)
+  AsignarArea(R_Jefe,areaJefe)
+  AsignarArea(r1,areaR1)
+  AsignarArea(r2,areaR2)
+  AsignarArea(r3,areaR3)
+  AsignarArea(r4,areaR4)
+  Iniciar (R_Jefe,1,1)
+  Iniciar (r1,2,1)
+  Iniciar (r2,3,1)
+  Iniciar (r3,4,1)
+  Iniciar (r4,5,1)
+fin

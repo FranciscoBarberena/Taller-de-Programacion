@@ -1,0 +1,90 @@
+programa Actividad5
+procesos
+  proceso viajeFuente (ES seguir : boolean; E miAvenida : numero; ES calleActual : numero)
+  comenzar
+    BloquearEsquina(11,11)
+    Pos(11,11)
+    si (HayPapelEnLaEsquina)
+      tomarPapel
+      Pos(miAvenida,calleActual)
+      LiberarEsquina(11,11)
+      depositarPapel
+      si (PosCa <>100)
+        mover
+        calleActual := PosCa
+      sino
+        seguir:=F
+    sino
+      seguir := F
+      Pos(miAvenida,calleActual)
+      LiberarEsquina(11,11)
+  fin
+areas
+  av2: AreaP (2,1,2,100)
+  av4: AreaP (4,1,4,100)
+  av6: AreaP (6,1,6,100)
+  av8: AreaP (8,1,8,100)
+  fuente: AreaPC (11,11,11,11)
+  areaJefe: AreaP(1,1,1,1)
+robots
+  robot corredor
+  variables
+    calleActual : numero
+    miAvenida : numero
+    seguir : boolean
+  comenzar
+    seguir := V
+    miAvenida := PosAv
+    calleActual:=PosCa
+    mientras(seguir)
+      viajeFuente(seguir,miAvenida,calleActual)
+    EnviarMensaje(miAvenida,R_Coordinador)
+    EnviarMensaje(calleActual,R_Coordinador)
+  fin
+  robot jefe
+  variables
+    robotAux: numero
+    cantAux: numero
+    cantMax: numero
+    robotMax: numero
+  comenzar
+    cantMax := 0
+    repetir 4
+      RecibirMensaje(robotAux,*)
+      si (robotAux = 2)
+        RecibirMensaje(cantAux,r2)
+      sino
+        si (robotAux = 4)
+          RecibirMensaje(cantAux,r4)
+        sino
+          si (robotAux = 6)
+            RecibirMensaje(cantAux,r6)
+          sino
+            RecibirMensaje(cantAux,r8)
+      si(cantAux>cantMax)
+        cantMax := cantAux
+        robotMax := robotAux
+    Informar("El que mas lejos llego fue el ",robotMax)
+  fin
+variables
+  r2: corredor
+  r4: corredor
+  r6: corredor
+  r8: corredor
+  R_Coordinador: jefe
+comenzar
+  AsignarArea(r2, av2)
+  AsignarArea(r4, av4)
+  AsignarArea(r6, av6)
+  AsignarArea(r8, av8)
+  AsignarArea(r2, fuente)
+  AsignarArea(r4, fuente)
+  AsignarArea(r6, fuente)
+  AsignarArea(r8, fuente)
+  AsignarArea(R_Coordinador, areaJefe)
+  Iniciar(r2, 2,1)
+  Iniciar(r4, 4,1)
+  Iniciar(r6, 6,1)
+  Iniciar(r8, 8,1)
+  Iniciar(R_Coordinador,1,1)
+fin

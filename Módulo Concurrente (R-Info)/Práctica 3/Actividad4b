@@ -1,0 +1,103 @@
+programa Actividad4b
+procesos
+  proceso recolectar(ES f: numero; ES seguir : boolean;E ID : numero)
+  comenzar
+    Pos(10,10)
+    si (HayFlorEnLaEsquina)
+      tomarFlor
+      f:=f+1
+    sino 
+      EnviarMensaje(ID,R_Coordinador)
+      seguir := F
+  fin
+areas
+  deposito: AreaC (11,11,11,11)
+  esquinaRecolectada: AreaPC(10,10,10,10)
+  areaCoordinador: AreaP(1,1,1,1)
+  areaR1: AreaP(9,9,9,9)
+  areaR2: AreaP(9,10,9,10)
+  areaR3: AreaP(9,11,9,11)
+  areaR4: AreaP(9,12,9,12)
+robots
+  robot recolector
+  variables
+    avIni,caIni,ID,flores : numero
+    seguir : boolean
+  comenzar
+    seguir := V
+    avIni := PosAv
+    caIni := PosCa
+    flores := 0
+    RecibirMensaje(ID,R_Coordinador)
+    mientras(seguir)
+      BloquearEsquina(10,10)
+      recolectar(flores, seguir,ID)
+      si (seguir)
+        Pos(avIni,caIni)
+        LiberarEsquina(10,10)
+        BloquearEsquina(11,11)
+        Pos(11,11)
+        depositarFlor
+        Pos(avIni,caIni)
+        LiberarEsquina(11,11)
+      sino
+        Pos(avIni,caIni)
+        LiberarEsquina(10,10)
+    EnviarMensaje(flores, R_Coordinador)
+  fin
+  robot coordinador
+  variables
+    total,ultimo,flores : numero
+  comenzar
+    total := 0
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+    EnviarMensaje(4,r4)
+    repetir 4
+      RecibirMensaje(ultimo,*)
+      si (ultimo = 1)
+        RecibirMensaje(flores,r1)
+      sino
+        si (ultimo = 2)
+          RecibirMensaje(flores,r2)
+        sino
+          si (ultimo = 3)
+            RecibirMensaje(flores,r3)
+          sino
+            RecibirMensaje(flores,r4)
+      total:= total + flores
+    Informar("El Robot que termino ultimo fue ",ultimo)
+    BloquearEsquina(11,11)
+    Pos(11,11)
+    si (total<>0)
+      repetir total
+        tomarFlor
+    Pos(1,1)
+    LiberarEsquina(11,11)
+      
+  fin
+variables
+  r1,r2,r3,r4: recolector
+  R_Coordinador: coordinador
+comenzar
+  AsignarArea(R_Coordinador, areaCoordinador)
+  AsignarArea(r1,areaR1)
+  AsignarArea(r2,areaR2)
+  AsignarArea(r3,areaR3)
+  AsignarArea(r4,areaR4)
+  AsignarArea(r1,esquinaRecolectada)
+  AsignarArea(r2,esquinaRecolectada)
+  AsignarArea(r3,esquinaRecolectada)
+  AsignarArea(r4,esquinaRecolectada)
+  AsignarArea(r1,deposito)
+  AsignarArea(r2,deposito)
+  AsignarArea(r3,deposito)
+  AsignarArea(r4,deposito)
+  AsignarArea(R_Coordinador,deposito)
+  Iniciar(R_Coordinador, 1,1)
+  Iniciar(r1,9,9)
+  Iniciar(r2,9,10)
+  Iniciar(r3,9,11)
+  Iniciar(r4,9,12)
+fin

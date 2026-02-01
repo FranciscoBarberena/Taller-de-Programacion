@@ -1,0 +1,150 @@
+programa Actividad2
+procesos
+  proceso izquierda
+  comenzar
+    derecha
+    derecha
+    derecha
+  fin
+  proceso hacerLado(E longitud : numero; ES t : numero)
+  comenzar
+    repetir longitud - 1
+      mover
+  fin
+  proceso limpiarFlores (ES t : numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      t := t + 1
+  fin
+  proceso limpiarPapeles (ES t : numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      t := t + 1
+  fin
+  proceso hacerEscalera (ES t : numero; E long : numero; E cantEscalones : numero)
+  variables
+    longitud : numero
+  comenzar
+    longitud := long
+    repetir 4
+      hacerLado(longitud,t)
+      limpiarFlores(t)
+      derecha
+      hacerLado(longitud,t)
+      limpiarFlores(t)
+      izquierda
+      longitud := longitud - 1
+    hacerLado(longitud,t)
+    limpiarFlores(t)
+    derecha
+    BloquearEsquina(16,16)
+    hacerLado(longitud,t)
+    limpiarFlores(t)
+    izquierda
+  fin
+  proceso hacerEscalera2 (ES t : numero; E long : numero; E cantEscalones : numero)
+  variables
+    longitud : numero
+  comenzar
+    longitud := long
+    repetir cantEscalones
+      hacerLado(longitud,t)
+      limpiarFlores(t)
+      derecha
+      hacerLado(longitud,t)
+      limpiarFlores(t)
+      izquierda
+      longitud := longitud + 1
+  fin
+  proceso hacerEscalera3 (ES t : numero; E long : numero; E cantEscalones : numero)
+  variables
+    longitud : numero
+  comenzar
+    longitud := long
+    repetir 4
+      hacerLado(longitud,t)
+      limpiarPapeles(t)
+      izquierda
+      hacerLado(longitud,t)
+      limpiarPapeles(t)
+      derecha
+      longitud := longitud - 1
+    hacerLado(longitud,t)
+    limpiarPapeles(t)
+    izquierda
+    BloquearEsquina(16,16)
+    hacerLado(longitud,t)
+    limpiarPapeles(t)
+    derecha
+  fin
+  proceso hacerEscalera4 (ES t : numero; E long : numero; E cantEscalones : numero)
+  variables
+    longitud : numero
+  comenzar
+    longitud := long
+    repetir cantEscalones
+      hacerLado(longitud,t)
+      limpiarPapeles(t)
+      izquierda
+      hacerLado(longitud,t)
+      limpiarPapeles(t)
+      derecha
+      longitud := longitud + 1
+  fin
+areas
+  areaR1: AreaP (1,1,15,30)
+  areaR2: AreaP(17,1,31,30)
+  esquinaComun: AreaPC(16,16,16,16)
+  areaJ: AreaP(16,1,16,1)
+robots
+  robot robot1
+  variables
+    total : numero
+  comenzar
+    total := 0
+    hacerEscalera (total,6,5)
+    EnviarMensaje(1,R_Jefe)
+    izquierda
+    mover
+    LiberarEsquina(16,16)
+    hacerEscalera2 (total,3,4)
+    derecha
+    Informar ("Mi total fue ",total)
+  fin
+  robot robot2
+  variables
+    total : numero
+  comenzar
+    total := 0
+    hacerEscalera3(total,6,5)
+    EnviarMensaje(2,R_Jefe)
+    derecha
+    mover
+    LiberarEsquina(16,16)
+    hacerEscalera4(total,3,4)
+    izquierda
+    Informar ("Mi total fue ",total)
+  fin
+  robot jefe
+  variables
+    ganador : numero
+  comenzar
+    RecibirMensaje(ganador,*)
+    Informar("El ganador fue ",ganador)
+  fin
+variables
+  r1: robot1
+  r2: robot2
+  R_Jefe: jefe
+comenzar
+  AsignarArea(r1, areaR1)
+  AsignarArea(r2,areaR2)
+  AsignarArea(r1, esquinaComun)
+  AsignarArea(r2,esquinaComun)
+  AsignarArea(R_Jefe, areaJ)
+  Iniciar(r1, 1,1)
+  Iniciar(r2,31,1)
+  Iniciar(R_Jefe,16,1)
+fin
