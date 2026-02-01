@@ -1,4 +1,4 @@
-# Todos los zip se pueden importar directamente al NetBeans (Archivo/Importar proyecto/De zip)
+## Todos los zip se pueden importar directamente al NetBeans (Archivo/Importar proyecto/De zip)
 
 - El archivo "Prácticas 1-4" es un zip que contiene el proyecto "TP_ProyectoAlumnos".
 - El archivo "Práctica 5" es un zip que contiene un proyecto por cada punto de la práctica de repaso.
