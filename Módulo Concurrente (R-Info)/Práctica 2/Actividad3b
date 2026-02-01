@@ -1,0 +1,136 @@
+{Modifique el programa anterior para que cada equipo repita el recorrido con las siguientes 20 esquinas de sus correspondientes calles.}
+programa Actividad3b
+procesos
+  proceso izquierda
+  comenzar
+    derecha
+    derecha
+    derecha
+  fin
+  proceso vaciarDeFlores(ES f : numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      f := f + 1
+  fin
+  proceso recorrerCalleFlores(ES f: numero)
+  comenzar
+    repetir 9
+      vaciarDeFlores (f)
+      mover
+    vaciarDeFlores (f)
+  fin
+  proceso vaciarDePapeles(ES p : numero)
+  comenzar
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      p := p + 1
+  fin
+  proceso recorrerCallePapeles(ES p: numero)
+  comenzar
+    repetir 9
+      vaciarDePapeles (p)
+      mover
+    vaciarDePapeles (p)
+  fin
+areas
+  A1a: AreaP (1,1,10,1)
+  A1b: AreaP (21,1,30,1)
+  A2a : AreaP (11,1,20,1)
+  A2b: AreaP (31,1,40,1)
+  B1a: AreaP (1,5,10,5)
+  B1b : AreaP (21,5,30,5)
+  B2a: AreaP (11,5,20,5)
+  B2b: AreaP (31,5,40,5)
+robots
+  robot robotA1
+  variables
+    papeles : numero
+  comenzar
+    papeles := 0
+    derecha
+    recorrerCallePapeles(papeles)
+    EnviarMensaje (papeles,A2)
+    Pos(21,1)
+    derecha
+    derecha
+    RecibirMensaje (papeles,A2)
+    derecha
+    derecha
+    recorrerCallePapeles(papeles)
+    EnviarMensaje (papeles,A2)
+  fin
+  robot robotA2
+  variables
+    papeles : numero
+  comenzar
+    izquierda
+    RecibirMensaje (papeles,A1)
+    derecha
+    derecha
+    recorrerCallePapeles(papeles)
+    EnviarMensaje(papeles,A1)
+    Pos(31,1)
+    derecha
+    derecha
+    RecibirMensaje(papeles,A1)
+    derecha
+    derecha
+    recorrerCallePapeles(papeles)
+    Informar("Equipo A ", papeles)
+  fin
+  robot robotB1
+  variables
+    flores : numero
+  comenzar
+    flores := 0
+    derecha
+    recorrerCalleFlores(flores)
+    EnviarMensaje (flores,B2)
+    Pos(21,5)
+    derecha
+    derecha
+    RecibirMensaje(flores, B2)
+    derecha
+    derecha
+    recorrerCalleFlores(flores)
+    EnviarMensaje (flores, B2)
+  fin
+  robot robotB2
+  variables
+    flores : numero
+  comenzar
+    izquierda
+    RecibirMensaje (flores,B1)
+    derecha
+    derecha
+    recorrerCalleFlores(flores)
+    EnviarMensaje(flores, B1)
+    Pos(31,5)
+    derecha
+    derecha
+    RecibirMensaje(flores, B1)
+    derecha
+    derecha
+    recorrerCalleFlores(flores)
+    Informar("Equipo B ", flores)
+  fin
+variables
+  A1: robotA1
+  A2 : robotA2
+  B1 : robotB1
+  B2 : robotB2
+comenzar
+  AsignarArea(A1, A1a)
+  AsignarArea(A1, A1b)
+  AsignarArea(A2, A2a)
+  AsignarArea(A2, A2b)
+  AsignarArea(B1, B1a)
+  AsignarArea(B1, B1b)
+  AsignarArea(B2, B2a)
+  AsignarArea(B2, B2b)
+  Iniciar(A1, 1,1)
+  Iniciar(A2, 11,1)
+  Iniciar(B1, 1,5)
+  Iniciar(B2, 11,5)
+fin

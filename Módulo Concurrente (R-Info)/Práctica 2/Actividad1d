@@ -1,0 +1,99 @@
+{Modifique el inciso anterior para que ahora el fiscalizador informe también, cual fue el robot ganador.}
+programa Actividad1d
+procesos
+  proceso vaciarFloresEsquina (ES cantidadFlores : numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantidadFlores := cantidadFlores + 1
+  fin
+  proceso limpiarDiezEsquinas(ES cantidadFlores: numero)
+  comenzar
+    repetir 9
+      vaciarFloresEsquina(cantidadFlores)
+      mover
+    vaciarFloresEsquina(cantidadFlores)
+  fin
+areas
+  area1: AreaP (1,1,1,10)
+  area2: AreaP(2,11,2,20)
+  area3: AreaP(3,21,3,30)
+  area4: AreaP(4,31,4,40)
+  area5: AreaP(5,41,5,50)
+  area6: AreaP(6,51,6,60)
+  fiscaArea : AreaP (2,1,2,1)
+robots
+  robot recolector
+  variables
+    cantidadFlores : numero
+    miCodigo : numero
+  comenzar
+    cantidadFlores := 0
+    RecibirMensaje(miCodigo,R_fisca)
+    limpiarDiezEsquinas(cantidadFlores)
+    EnviarMensaje(miCodigo,R_fisca)
+    EnviarMensaje(cantidadFlores, R_fisca)
+  fin
+  robot fiscalizador
+  variables
+    cantidadAux : numero
+    max : numero
+    codigoAux : numero
+    codigoMax : numero
+  comenzar
+    codigoMax := 0
+    max := 0
+    EnviarMensaje(1,R_uno)
+    EnviarMensaje(2,R_dos)
+    EnviarMensaje(3,R_tres)
+    EnviarMensaje(4,R_cuatro)
+    EnviarMensaje(5,R_cinco)
+    EnviarMensaje(6,R_seis)
+    repetir 6
+      RecibirMensaje(codigoAux,*)
+      si (codigoAux = 1)
+        RecibirMensaje (cantidadAux,R_uno)
+      sino
+        si (codigoAux = 2)
+          RecibirMensaje(cantidadAux,R_dos)
+        sino
+          si (codigoAux = 3)
+            RecibirMensaje (cantidadAux,R_tres)
+          sino
+            si (codigoAux =4)
+              RecibirMensaje(cantidadAux,R_cuatro)
+            sino
+              si (codigoAux = 5)
+                RecibirMensaje(cantidadAux,R_cinco)
+              sino
+                RecibirMensaje (cantidadAux,R_seis)
+      si (cantidadAux>max)
+        max := cantidadAux
+        codigoMax := codigoAux
+    Informar ("El roboT siguiente fue el ganador  ",codigoMax)
+    Informar ("Junto la siguiente cantidad de flores ",max)
+  fin 
+variables
+  R_uno: recolector
+  R_dos : recolector
+  R_tres : recolector
+  R_cuatro : recolector
+  R_cinco : recolector
+  R_seis : recolector
+  R_fisca: fiscalizador
+comenzar
+  AsignarArea(R_uno, area1)
+  AsignarArea(R_dos, area2)
+  AsignarArea(R_tres, area3)
+  AsignarArea(R_cuatro, area4)
+  AsignarArea(R_cinco, area5)
+  AsignarArea(R_seis, area6)
+  AsignarArea(R_fisca, fiscaArea)
+  Iniciar(R_uno, 1,1)
+  Iniciar(R_dos, 2,11)
+  Iniciar(R_tres, 3,21)
+  Iniciar (R_cuatro,4,31)
+  Iniciar(R_cinco,5,41)
+  Iniciar(R_seis,6,51)
+  Iniciar(R_fisca,2,1)
+fin

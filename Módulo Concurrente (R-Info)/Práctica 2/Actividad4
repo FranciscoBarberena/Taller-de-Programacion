@@ -1,0 +1,162 @@
+{Realice un programa en el que un robot fiscalizador controla el acceso de 4 robots recolectores al cuadrante encerrado entre las esquinas (25,25) y (75,75). Para ello, el robot fiscalizador avisa a un robot recolector aleatorio que puede ingresar al area. El robot que recibe la autorizacion de acceso calcula una esquina aleatoria dentro del area, limpia dicha esquina de flores y papeles, regresa a su esquina y avisa al robot fiscalizador que ya finalizo. Se realizaran en total 10 accesos al cuadrante entre los 4 robots recolectores. Al finalizar, el robot fiscalizador debera indicar al robot ganador que se posicione en la esquina (50,50). 
+  El robot fiscalizador inicia en la esquina (1,1) y los robots recolectores inician en las esquinas (25,1) (30,1) (35,1) y (40,1) respectivamente.}
+programa Actividad4
+procesos
+  proceso vaciarEsquina(ES t: numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      t :=t + 1
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      t :=t + 1
+  fin
+areas
+  cuadrante: AreaPC(25,25,75,75)
+  areaFisca: AreaP(1,1,1,1)
+  areaR1: AreaP(25,1,25,1)
+  areaR2: AreaP(30,1,30,1)
+  areaR3: AreaP(35,1,35,1)
+  areaR4: AreaP(40,1,40,1)
+robots
+  robot recolector
+  variables
+    miInicio : numero
+    total : numero
+    autorizacion : boolean
+    av : numero
+    ca : numero
+    fuiElMejor : boolean
+    finRecorridos : boolean
+  comenzar
+    fuiElMejor := F
+    finRecorridos := F
+    total := 0
+    RecibirMensaje (miInicio, R_Fisca)
+    mientras(finRecorridos = F)
+      RecibirMensaje(finRecorridos, R_Fisca)
+      si (finRecorridos = F)
+        RecibirMensaje(autorizacion, R_Fisca)
+        Random (av,25,75)
+        Random (ca,25,75)
+        Pos(av,ca)
+        vaciarEsquina (total)
+        Pos(miInicio,1)
+        EnviarMensaje(V, R_Fisca)
+    EnviarMensaje(total,R_Fisca)
+    EnviarMensaje(miInicio,R_Fisca)
+    RecibirMensaje (fuiElMejor, R_Fisca)
+    si (fuiElMejor)
+      Pos(50,50)
+  fin
+  robot fiscalizador
+  variables
+    numeroAleatorio : numero
+    finalizo : boolean
+    max : numero
+    maxRobot : numero
+    cantAux : numero
+    robotAux : numero
+    i : numero
+  comenzar
+    max := 0
+    maxRobot := 0
+    EnviarMensaje(25,r1)
+    EnviarMensaje(30,r2)
+    EnviarMensaje(35,r3)
+    EnviarMensaje(40,r4)
+    repetir 10
+      Random(numeroAleatorio,1,4)
+      si (numeroAleatorio = 1)
+        EnviarMensaje(F,r1) {autorizacion}
+        EnviarMensaje(V,r1) {fin recorrido}
+      sino
+        si (numeroAleatorio = 2)
+          EnviarMensaje (F,r2)
+          EnviarMensaje(V,r2)
+        sino
+          si (numeroAleatorio = 3)
+            EnviarMensaje (F,r3)
+            EnviarMensaje(V,r3)
+          sino
+            EnviarMensaje(F,r4)
+            EnviarMensaje(V,r4)
+      RecibirMensaje(finalizo,*)
+    EnviarMensaje(V,r1) {fin Recorrido}
+    EnviarMensaje(V,r2)
+    EnviarMensaje(V,r3)
+    EnviarMensaje(V,r4)
+    i := 1
+    mientras (i<= 4)
+      si (i = 1)
+        RecibirMensaje(cantAux,r1)
+        RecibirMensaje (robotAux, r1)
+        si (cantAux > max)
+          max := cantAux
+          maxRobot := i
+      sino
+        si (i=2)
+          RecibirMensaje(cantAux,r2)
+          RecibirMensaje (robotAux, r2)
+          si (cantAux > max)
+            max := cantAux
+            maxRobot := i
+        sino
+          si (i = 3)
+            RecibirMensaje(cantAux,r3)
+            RecibirMensaje (robotAux, r3)
+            si (cantAux > max)
+              max := cantAux
+              maxRobot := i
+          sino
+            RecibirMensaje(cantAux,r4)
+            RecibirMensaje (robotAux, r4)
+            si (cantAux > max)
+              max := cantAux
+              maxRobot := i
+      i := i + 1
+    si (maxRobot = 1)
+      EnviarMensaje(V,r1)
+      EnviarMensaje(F,r2)
+      EnviarMensaje(F,r3)
+      EnviarMensaje(F,r4)
+    sino
+      si (maxRobot = 2)
+        EnviarMensaje (V,r2)
+        EnviarMensaje(F,r1)
+        EnviarMensaje(F,r3)
+        EnviarMensaje(F,r4)
+      sino
+        si (maxRobot = 3)
+          EnviarMensaje (V,r3)
+          EnviarMensaje(F,r2)
+          EnviarMensaje(F,r1)
+          EnviarMensaje(F,r4)
+        sino
+          EnviarMensaje(V,r4)
+          EnviarMensaje(F,r2)
+          EnviarMensaje(F,r3)
+          EnviarMensaje(F,r1)
+  fin
+variables
+  r1 : recolector
+  r2 : recolector
+  r3 : recolector
+  r4 : recolector
+  R_Fisca : fiscalizador
+comenzar
+  AsignarArea (R_Fisca, areaFisca)
+  AsignarArea(r1, cuadrante)
+  AsignarArea(r2, cuadrante)
+  AsignarArea(r3, cuadrante)
+  AsignarArea(r4, cuadrante)
+  AsignarArea(r1, areaR1)
+  AsignarArea(r2, areaR2)
+  AsignarArea(r3, areaR3)
+  AsignarArea(r4, areaR4)
+  Iniciar(R_Fisca, 1,1)
+  Iniciar (r1,25,1)
+  Iniciar (r2,30,1)
+  Iniciar (r3,35,1)
+  Iniciar (r4,40,1)
+fin

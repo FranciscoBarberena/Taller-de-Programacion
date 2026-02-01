@@ -1,0 +1,69 @@
+{Modifique el ejercicio anterior para que ahora participen 6 robots. El fiscalizador deberá informar la cantidad de flores que juntó el robot ganador.}
+programa Actividad1c
+procesos
+  proceso vaciarFloresEsquina (ES cantidadFlores : numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantidadFlores := cantidadFlores + 1
+  fin
+  proceso limpiarDiezEsquinas(ES cantidadFlores: numero)
+  comenzar
+    repetir 9
+      vaciarFloresEsquina(cantidadFlores)
+      mover
+    vaciarFloresEsquina(cantidadFlores)
+  fin
+areas
+  area1: AreaP (1,1,1,10)
+  area2: AreaP(2,11,2,20)
+  area3: AreaP(3,21,3,30)
+  area4: AreaP(4,31,4,40)
+  area5: AreaP(5,41,5,50)
+  area6: AreaP(6,51,6,60)
+  fiscaArea : AreaP (2,1,2,1)
+robots
+  robot recolector
+  variables
+    cantidadFlores : numero
+    
+  comenzar
+    cantidadFlores := 0
+    limpiarDiezEsquinas(cantidadFlores)
+    EnviarMensaje(cantidadFlores, R_fisca)
+  fin
+  robot fiscalizador
+  variables
+    cantidadAux : numero
+    max : numero
+  comenzar
+    repetir 6
+      RecibirMensaje(cantidadAux,*)
+      si (cantidadAux>max)
+        max := cantidadAux
+    Informar("El ROBOT con mas flores junto ",max)
+  fin
+variables
+  R_uno: recolector
+  R_dos : recolector
+  R_tres : recolector
+  R_cuatro : recolector
+  R_cinco : recolector
+  R_seis : recolector
+  R_fisca: fiscalizador
+comenzar
+  AsignarArea(R_uno, area1)
+  AsignarArea(R_dos, area2)
+  AsignarArea(R_tres, area3)
+  AsignarArea(R_cuatro, area4)
+  AsignarArea(R_cinco, area5)
+  AsignarArea(R_seis, area6)
+  AsignarArea(R_fisca, fiscaArea)
+  Iniciar(R_uno, 1,1)
+  Iniciar(R_dos, 2,11)
+  Iniciar(R_tres, 3,21)
+  Iniciar (R_cuatro,4,31)
+  Iniciar(R_cinco,5,41)
+  Iniciar(R_seis,6,51)
+  Iniciar(R_fisca,2,1)
+fin

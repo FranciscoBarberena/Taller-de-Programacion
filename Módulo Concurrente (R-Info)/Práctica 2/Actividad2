@@ -1,0 +1,93 @@
+{Realice un programa en el que 3 robots realizan una escalera de 4 escalones cada uno. Todos los escalones tienen un ancho fijo de 1, y un alto aleatorio entre 1 y 5. Al finalizar el recorrido, cada robot debe enviar al robot jefe la cantidad de escalones que tienen mas flores que papeles. Una vez que los tres robots finalizaron, el robot jefe debera informar la suma de las cantidades enviadas por los 3 robots}
+programa Actividad2
+procesos
+  proceso izquierda
+  comenzar
+    derecha
+    derecha
+    derecha
+  fin
+  proceso limpiarDePapeles (ES p : numero)
+  comenzar
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      p := p + 1
+  fin
+  proceso limpiarDeFlores (ES f : numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      f := f + 1
+  fin
+  proceso hacerEscalon (ES cantidadCumple : numero)
+  variables
+    alto : numero
+    cantAux : numero
+    floresAux : numero
+    papelesAux : numero
+  comenzar
+    cantAux := 0
+    papelesAux :=0
+    floresAux :=0
+    limpiarDePapeles(papelesAux)
+    limpiarDeFlores (floresAux)
+    mover
+    Random(alto,1,5)
+    izquierda
+    repetir alto
+      limpiarDePapeles(papelesAux)
+      limpiarDeFlores (floresAux)
+      mover
+    limpiarDePapeles(papelesAux)
+    limpiarDeFlores (floresAux)
+    si (floresAux > papelesAux)
+      cantidadCumple := cantidadCumple + 1
+  fin
+  proceso hacerEscalera (ES cantidadCumple : numero; E cantEscalones : numero)
+  comenzar
+    repetir cantEscalones
+      derecha
+      hacerEscalon(cantidadCumple)
+  fin
+areas
+  area1: AreaP (2,1,6,21)
+  area2: AreaP (7,1,11,21)
+  area3: AreaP (12,1,16,21)
+  areaJ : AreaP(1,1,1,1)
+robots
+  robot recolector
+  variables
+    cantidadCumple : numero
+    cantEscalones : numero
+  comenzar
+    cantidadCumple := 0
+    cantEscalones := 4
+    hacerEscalera(cantidadCumple,cantEscalones)
+    EnviarMensaje(cantidadCumple,R_Jefe)
+  fin
+  robot jefe
+  variables
+    cantAux : numero
+    total : numero
+  comenzar
+    total := 0
+    repetir 3
+      RecibirMensaje(cantAux,*)
+      total := total + cantAux
+    Informar("El total de escalones que cumplen fue ",total)
+  fin
+variables
+  r1: recolector
+  r2: recolector
+  r3: recolector
+  R_Jefe : jefe
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r2, area2)
+  AsignarArea(r3, area3)
+  AsignarArea(R_Jefe, areaJ)
+  Iniciar(r1, 2,1)
+  Iniciar(r2,7,1)
+  Iniciar(r3,12,1)
+  Iniciar(R_Jefe,1,1)
+fin
