@@ -1,0 +1,103 @@
+{Realice un programa en el que cuatro robots realizan las siguientes actividades:
+- El robot 1 debe limpiar de flores las primeras 15 esquinas de las calles 75 y 80. Al finalizar
+cada calle, debe depositar todas las flores en la ultima esquina.
+- El robot 2 debe limpiar de papeles las ultimas 20 esquinas de las avenidas 75 y 80. Al finalizar cada avenida debe depositar todos los papeles en la primera esquina.
+- El robot 3 debe limpiar de flores las ultimas 30 esquinas de las calles 10 y 15. Al finalizar
+cada calle, debe depositar todas las flores en la ultima esquina.
+- El robot 4 debe limpiar de papeles las primeras 10 esquinas de las avenidas 10 y 15. Al finalizar cada avenida debe depositar todos los papeles en la primera esquina}
+
+programa ejemplo
+procesos
+  proceso vaciarFloresEsquina(ES cantFlores: numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantFlores := cantFlores + 1
+  fin
+  proceso vaciarPapelesEsquina(ES cantPapeles: numero)
+  comenzar
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      cantPapeles := cantPapeles + 1
+  fin
+  proceso dejarFlores (E cantFlores : numero)
+  comenzar
+    repetir cantFlores
+      depositarFlor
+  fin
+  proceso dejarPapeles (E cantPapeles : numero)
+  comenzar
+    repetir cantPapeles
+      depositarPapel 
+  fin
+  proceso limpiarNEsquinasFlores (E n : numero)
+  variables
+    cantFlores : numero
+  comenzar
+    cantFlores := 0  
+    repetir n - 1
+      vaciarFloresEsquina (cantFlores)
+      mover
+    vaciarFloresEsquina(cantFlores)
+    dejarFlores(cantFlores)
+  fin
+  proceso limpiarNEsquinasPapeles (E n : numero)
+  variables
+    cantpapeles : numero
+  comenzar
+    cantpapeles := 0
+    repetir n - 1
+      vaciarPapelesEsquina (cantpapeles)
+      mover
+    vaciarPapelesEsquina(cantpapeles)
+    Pos(PosAv,PosCa-n+1)
+    dejarPapeles(cantpapeles)
+  fin
+
+areas
+  area1: AreaP (1,75,15,80)
+  area2: AreaP (75,81,80,100)
+  area3: AreaP (71,10,100,15)
+  area4: AreaP (10,1,15,10)
+robots
+  robot robot1
+  comenzar
+    derecha
+    limpiarNEsquinasFlores(15)
+    Pos (1,PosCa-5)
+    limpiarNEsquinasFlores(15)
+  fin
+  robot robot2
+  comenzar
+    limpiarNEsquinasPapeles(20)
+    Pos(PosAv+5,81)
+    limpiarNEsquinasPapeles(20)
+  fin
+  robot robot3
+  comenzar
+    derecha
+    limpiarNEsquinasFlores(30)
+    Pos(71,PosCa-5)
+    limpiarNEsquinasFlores(30)
+  fin
+  robot robot4
+  comenzar
+    limpiarNEsquinasPapeles(10)
+    Pos(PosAv+5,1)
+    limpiarNEsquinasPapeles(10)
+  fin
+variables
+  R_uno: robot1
+  R_dos : robot2
+  R_tres : robot3
+  R_cuatro : robot4
+comenzar
+  AsignarArea(R_uno, area1)
+  AsignarArea(R_dos, area2)
+  AsignarArea(R_tres, area3)
+  AsignarArea(R_cuatro, area4)
+  Iniciar(R_uno, 1,80)
+  Iniciar (R_dos, 75,81)
+  Iniciar (R_tres, 71,15)
+  Iniciar (R_cuatro, 10,1)
+fin

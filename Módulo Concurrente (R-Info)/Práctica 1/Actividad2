@@ -1,0 +1,80 @@
+{ 2) Realice un programa en el que 4 robots limpien de papeles el perimetro de un cuadrado de lado 20 en sentido horario. El vertice inferior izquierdo del cuadrado se ubica en la esquina (10,10). Al finalizar, cada robot debe informar la cantidad de papeles juntados en su lado.
+ a) Como deben declararse la o las Areas?
+ b) Existe riesgo de colision?}
+
+programa Actividad2
+procesos
+  proceso limpiarPapeles(ES cantidadPapeles : numero)
+  comenzar
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      cantidadPapeles:=cantidadPapeles + 1
+  fin
+
+areas
+  der: AreaP(30,11,30,30)
+  izquierda: AreaP(10,10,10,29)
+  techo: AreaP(10,30,29,30)
+  base: AreaP(11,10,30,10)
+robots
+  robot robot1
+  variables
+    cantidadPapeles : numero
+  comenzar
+    derecha
+    derecha
+    derecha
+    repetir 19
+      limpiarPapeles(cantidadPapeles)
+      mover
+    limpiarPapeles(cantidadPapeles)
+    Informar ("Cantidad de papeles en la base ",cantidadPapeles)
+  fin
+  robot robot2
+  variables
+    cantidadPapeles : numero
+  comenzar
+    derecha
+    repetir 19
+      limpiarPapeles(cantidadPapeles)
+      mover
+    limpiarPapeles(cantidadPapeles)
+    Informar ("Cantidad de papeles en el techo ",cantidadPapeles)
+  fin
+  robot robot3
+  variables
+    cantidadPapeles : numero
+  comenzar
+    derecha
+    derecha
+    repetir 19
+      limpiarPapeles(cantidadPapeles)
+      mover
+    limpiarPapeles(cantidadPapeles)
+    Informar ("Cantidad de papeles en el lado derecho ",cantidadPapeles)
+  fin
+  robot robot4
+  variables
+    cantidadPapeles : numero
+  comenzar
+    repetir 19
+      limpiarPapeles(cantidadPapeles)
+      mover
+    limpiarPapeles(cantidadPapeles)
+    Informar ("Cantidad de papeles en el lado izquierdo ",cantidadPapeles)
+  fin
+variables
+  R_base: robot1
+  R_techo : robot2
+  R_derecha : robot3
+  R_izquierda : robot4
+comenzar
+  AsignarArea(R_izquierda, izquierda)
+  AsignarArea(R_derecha, der)
+  AsignarArea(R_techo, techo)
+  AsignarArea(R_base, base)
+  Iniciar(R_izquierda, 10,10)
+  Iniciar(R_techo, 10,30)
+  Iniciar(R_derecha, 30,30)
+  Iniciar(R_base, 30,10)
+fin

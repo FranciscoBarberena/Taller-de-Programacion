@@ -1,0 +1,86 @@
+{Realice un programa en el que 3 robots realicen escaleras de 4 escalones. El tamano de cada escalon se incrementa en un 1 respecto al escalon anterior. El primer escalon sera de 1x1, el segundo de 2x2, y asi sucesivamente. Al finalizar el recorrido, cada robot debe informar la cantidad de escalones en los que la cantidad de papeles supera en 1 a la cantidad de flores. Las esquinas deben quedar sin modificar.}
+
+programa Actividad3
+procesos
+  proceso izquierda
+  comenzar
+    derecha
+    derecha
+    derecha
+  fin
+  proceso contarFloresEsquina (ES cantFlores : numero)
+  variables
+    aux : numero
+  comenzar
+    aux := 0
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      aux := aux + 1
+    repetir aux
+      depositarFlor
+    cantFlores := cantFlores + aux
+  fin
+  proceso contarPapelesEsquina (ES cantPapeles : numero)
+  variables
+    aux : numero
+  comenzar
+    aux := 0
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      aux := aux + 1
+    repetir aux
+      depositarPapel
+    cantPapeles := cantPapeles + aux
+  fin
+  proceso hacerLado (E tamano : numero; ES cantFlores : numero; ES cantPapeles : numero)
+  comenzar
+    si (tamano = 1)
+      contarFloresEsquina(cantFlores)
+      contarPapelesEsquina (cantPapeles)
+    repetir tamano
+      mover
+      contarFloresEsquina(cantFlores)
+      contarPapelesEsquina (cantPapeles)
+  fin
+  proceso hacerEscalon(E tamano : numero; ES cantCumplen : numero)
+  variables
+    cantFlores : numero
+    cantPapeles : numero
+  comenzar
+    cantFlores := 0
+    cantPapeles := 0
+    hacerLado(tamano,cantFlores,cantPapeles)
+    derecha
+    hacerLado(tamano,cantFlores,cantPapeles)
+    si (cantPapeles = (cantFlores + 1))
+      cantCumplen := cantCumplen + 1
+    izquierda 
+  fin
+areas
+  ciudad: AreaC(1,1,100,100)
+robots
+  robot robot1
+  variables
+    tamano : numero
+    escalonesCumplen : numero
+  comenzar
+    escalonesCumplen :=0
+    tamano :=0
+    repetir 4
+      tamano :=tamano + 1
+      hacerEscalon(tamano, escalonesCumplen)
+    Informar("La cantidad de escalones que cumplen fueron ",escalonesCumplen)
+  fin
+variables
+  R_uno: robot1
+  R_dos: robot1
+  R_tres: robot1
+comenzar
+  AsignarArea(R_uno, ciudad)
+  AsignarArea(R_dos, ciudad)
+  AsignarArea (R_tres, ciudad)
+  Iniciar(R_uno, 12,14)
+  Iniciar(R_dos, 17,10)
+  Iniciar(R_tres, 22,6)
+
+fin
