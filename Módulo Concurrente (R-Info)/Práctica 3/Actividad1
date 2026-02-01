@@ -1,0 +1,84 @@
+programa Actividad1
+areas
+  areaFlores: AreaPC (1,1,5,10)
+  areaPapeles: AreaPC(6,1,10,9)
+  areaP1: AreaP(8,10,8,10)
+  areaP2: AreaP(9,10,9,10)
+  areaF1: AreaP(6,10,6,10)
+  areaF2: AreaP(7,10,7,10)
+  area10: AreaC(10,10,10,10)
+robots
+  robot papelero
+  variables
+    intentos,av,ca,cantTomadas,avIni,caIni : numero
+  comenzar
+    avIni := PosAv
+    caIni := PosCa
+    intentos := 99999
+    cantTomadas := 0
+    repetir intentos
+      Random(av,6,10)
+      Random(ca,1,9)
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      si (HayPapelEnLaEsquina)
+        tomarPapel
+        cantTomadas := cantTomadas + 1
+      Pos(avIni,caIni)
+      LiberarEsquina(av,ca)
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    repetir cantTomadas
+      depositarPapel
+    Pos(avIni,caIni)
+    LiberarEsquina(10,10)
+  fin
+  robot florero
+  variables
+    intentos,av,ca,cantTomadas,avIni,caIni : numero
+  comenzar
+    avIni := PosAv
+    caIni := PosCa
+    intentos := 99999
+    cantTomadas := 0
+    repetir intentos
+      Random(av,1,5)
+      Random(ca,1,10)
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      si (HayFlorEnLaEsquina)
+        tomarFlor
+        cantTomadas := cantTomadas + 1
+      Pos(avIni,caIni)
+      LiberarEsquina(av,ca)
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    repetir cantTomadas
+      depositarFlor
+    Pos(avIni,caIni)
+    LiberarEsquina(10,10)
+  fin
+  
+variables
+  p1: papelero
+  p2: papelero
+  f1: florero
+  f2: florero
+comenzar
+  AsignarArea(p1, areaPapeles)
+  AsignarArea(p2, areaPapeles)
+  AsignarArea(f1, areaFlores)
+  AsignarArea(f2, areaFlores)
+  AsignarArea(p1, area10)
+  AsignarArea(p2, area10)
+  AsignarArea(f1, area10)
+  AsignarArea(f2, area10)
+  AsignarArea(p1,areaP1)
+  AsignarArea(p2,areaP2)
+  AsignarArea(f1,areaF1)
+  AsignarArea(f2,areaF2)
+  Iniciar(f1, 6,10)
+  Iniciar(f2, 7,10)
+  Iniciar(p1, 8,10)
+  Iniciar(p2, 9,10)
+fin
