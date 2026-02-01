@@ -10,5 +10,5 @@
 - [Parciales resueltos](https://github.com/FranciscoBarberena/Taller-de-Programacion/tree/main/01%20-%20M%C3%B3dulo%20Imperativo%20(Pascal)/06%20-%20Ex%C3%A1menes%20viejos)
 
 ## Módulo Objetos (Java)
-- (Consignas)[https://github.com/FranciscoBarberena/Taller-de-Programacion/tree/main/02%20-%20M%C3%B3dulo%20Objetos%20(Java)/Consignas]
-- (Prácticas y parciales resueltos)[https://github.com/FranciscoBarberena/Taller-de-Programacion/tree/main/02%20-%20M%C3%B3dulo%20Objetos%20(Java)]
+- [Consignas](https://github.com/FranciscoBarberena/Taller-de-Programacion/tree/main/02%20-%20M%C3%B3dulo%20Objetos%20(Java)/Consignas)
+- [Prácticas y parciales resueltos](https://github.com/FranciscoBarberena/Taller-de-Programacion/tree/main/02%20-%20M%C3%B3dulo%20Objetos%20(Java))
