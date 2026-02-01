@@ -1,0 +1,109 @@
+{Tres robots floreros tienen 8 intentos en total para juntar todas las flores dentro del
+cuadrante comprendido entre las esquinas (40,40) y (60,60). Para ello, en cada intento un
+robot fiscalizador indicara a un robot aleatorio la esquina a la que debe dirigirse. El
+fiscalizador calculara esta esquina de manera aleatoria. Al completarse los 8 intentos, los
+robots floreros deberan depositar todas las flores juntadas en la esquina (10,10), y el robot
+fiscalizador debera informar la cantidad total de flores juntadas por los robots.
+Los robots floreros inician en las esquinas (1,1), (2,1) y (3,1) respectivamente, y el
+fiscalizador en la (4,1).}
+programa Actividad4
+procesos
+  proceso mandarMensajes(ES flores:numero)
+  variables
+    av,ca,cod,aux:numero
+  comenzar
+    Random(av,40,60)
+    Random(ca,40,60)
+    Random(cod,1,3)
+    si (cod = 1)
+      EnviarMensaje(V,R_uno)
+      EnviarMensaje(av,R_uno)
+      EnviarMensaje(ca,R_uno)
+      RecibirMensaje(aux,R_uno)
+    sino
+      si (cod = 2)
+        EnviarMensaje(V,R_dos) 
+        EnviarMensaje(av,R_dos) 
+        EnviarMensaje(ca,R_dos) 
+        RecibirMensaje(aux,R_dos) 
+      sino
+        EnviarMensaje(V,R_tres) 
+        EnviarMensaje(av,R_tres) 
+        EnviarMensaje(ca,R_tres) 
+        RecibirMensaje(aux,R_tres) 
+    flores:=flores+aux
+  fin
+areas
+  cuadrante: AreaPC (40,40,60,60)
+  inicio1: AreaP (1,1,1,1)
+  inicio2: AreaP (2,1,2,1)
+  inicio3: AreaP (3,1,3,1)
+  inicio4: AreaP (4,1,4,1)
+  deposito: AreaC (10,10,10,10)
+robots
+  robot recolector
+  variables
+    iniAv,iniCa,av,ca,flores:numero 
+    sigo:boolean
+  comenzar
+    iniAv:=PosAv
+    iniCa:=PosCa
+    flores:=0
+    RecibirMensaje(sigo,R_cuatro)
+    mientras (sigo)
+      RecibirMensaje(av,R_cuatro)
+      RecibirMensaje(ca,R_cuatro)
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      mientras(HayFlorEnLaEsquina)
+        tomarFlor
+        flores:=flores+1
+      Pos(iniAv,iniCa)
+      LiberarEsquina(av,ca)
+      BloquearEsquina(10,10)
+      Pos(10,10)
+      repetir flores
+        depositarFlor
+      Pos(iniAv,iniCa)
+      LiberarEsquina(10,10)
+      EnviarMensaje(flores,R_cuatro)
+      flores:=0
+      RecibirMensaje(sigo,R_cuatro)
+  fin
+  robot fiscalizador
+  variables
+    flores:numero
+  comenzar
+    flores:=0
+    repetir 8 
+      mandarMensajes(flores)
+    EnviarMensaje(F,R_uno)
+    EnviarMensaje(F,R_dos)
+    EnviarMensaje(F,R_tres) 
+    Pos(10,10)
+    repetir flores
+      tomarFlor
+    Informar("se recolecto ",flores)
+  fin 
+variables 
+  R_uno: recolector
+  R_dos: recolector
+  R_tres: recolector
+  R_cuatro: fiscalizador
+comenzar 
+  AsignarArea(R_uno, inicio1)
+  AsignarArea(R_dos, inicio2)
+  AsignarArea(R_tres, inicio3)
+  AsignarArea(R_cuatro, inicio4)
+  AsignarArea(R_uno, cuadrante)
+  AsignarArea(R_dos, cuadrante)
+  AsignarArea(R_tres, cuadrante)
+  AsignarArea(R_uno, deposito)
+  AsignarArea(R_dos, deposito)
+  AsignarArea(R_tres, deposito)
+  AsignarArea(R_cuatro, deposito)
+  Iniciar(R_uno, 1,1)
+  Iniciar(R_dos, 2,1)
+  Iniciar(R_tres, 3,1)
+  Iniciar(R_cuatro, 4,1)
+fin

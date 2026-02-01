@@ -1,0 +1,115 @@
+{Tres robots recolectores deben avanzar por su calle vaciando las esquinas. El avance debe realizarse en conjunto en etapas, siguiendo el modelo de sincronizacion barrera, en el cual los robots deben esperar que todos terminen su tarea antes de avanzar a la siguiente etapa. Cada etapa consiste en recorrer 10 esquinas y luego depositar todas las flores recolectadas en la esquina (50,50). Una vez que los robots recolectores completaron toda su calle, un robot fiscalizador debera juntar todas las flores de la esquina (50,50) e informar la cantidad total de flores juntadas. Los robots recolectores inician en las esquinas (1,1), (1,2) y (1,3) respectivamente. El robot fiscalizador inicia en la esquina (1,4).
+
+A VECES LLEGABA UNO AL FINAL DE LA ETAPA, DESPUES ARRANCABA EL OTRO Y LLEGABA AL FINAL DE LA ETAPA, Y DESPUES EL OTRO}
+programa Actividad2
+procesos
+  proceso recibirCantidades (ES t : numero)
+  variables
+    aux : numero
+  comenzar
+    repetir 3
+      RecibirMensaje(aux,*)
+      t := t + aux
+  fin
+  proceso vaciarDeFlores(ES f : numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      f := f + 1
+  fin
+  proceso vaciarDePapeles(ES p : numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      p := p + 1
+  fin
+  proceso vaciarEsquina(ES flores : numero; ES papeles : numero)
+  comenzar
+    vaciarDeFlores(flores)
+    vaciarDePapeles(papeles)
+  fin
+  proceso hacerEtapa(E x : numero;ES flores: numero; ES papeles: numero)
+  comenzar
+    flores := 0
+    repetir x
+      vaciarEsquina(flores,papeles)
+      mover
+  fin
+  proceso dejarFlores(ES flores : numero)
+  comenzar
+    repetir flores
+      depositarFlor
+  fin
+  proceso limpiarDeposito
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+  fin
+  proceso irDeposito (ES flores : numero)
+  variables
+    caAux,avAux : numero
+  comenzar
+    caAux := PosCa
+    avAux := PosAv
+    BloquearEsquina(50,50)
+    Pos(50,50)
+    dejarFlores(flores)
+    Pos(avAux,caAux)
+    LiberarEsquina(50,50)
+  fin
+areas
+  ca1: AreaP(1,1,100,1)
+  ca2: AreaP(1,2,100,2)
+  ca3: AreaP(1,3,100,3)
+  areaFisca: AreaP(1,4,1,4)
+  deposito: AreaC (50,50,50,50)
+  
+robots
+  robot recolector
+  variables
+    flores,papeles : numero
+    seguir : boolean
+  comenzar
+    derecha
+    repetir 9
+      hacerEtapa(10,flores,papeles)
+      irDeposito(flores)
+      EnviarMensaje(flores,R_Fisca)
+      RecibirMensaje(seguir,R_Fisca)
+    hacerEtapa(9,flores,papeles)
+    vaciarEsquina(flores,papeles)
+    irDeposito(flores)
+    EnviarMensaje(flores,R_Fisca)
+  fin
+  robot fiscalizador
+  variables
+    totalFlores : numero
+  comenzar
+    totalFlores := 0
+    repetir 9
+      recibirCantidades(totalFlores)
+      EnviarMensaje(V,r1)
+      EnviarMensaje(V,r2)
+      EnviarMensaje(V,r3)
+    recibirCantidades(totalFlores)
+    limpiarDeposito
+    Informar("La cantidad total de flores de las primeras calles fue ",totalFlores)
+      
+  fin
+variables
+  r1,r2,r3: recolector
+  R_Fisca: fiscalizador
+comenzar
+  AsignarArea(R_Fisca, areaFisca)
+  AsignarArea(r1,ca1)
+  AsignarArea(r2,ca2)
+  AsignarArea(r3,ca3)
+  AsignarArea(R_Fisca, deposito)
+  AsignarArea(r1,deposito)
+  AsignarArea(r2,deposito)
+  AsignarArea(r3,deposito)
+  Iniciar(R_Fisca, 1,4)
+  Iniciar(r1,1,1)
+  Iniciar(r2,1,2)
+  Iniciar(r3,1,3)
+fin

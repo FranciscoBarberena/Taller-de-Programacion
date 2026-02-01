@@ -1,0 +1,66 @@
+programa Actividad5
+areas
+  deposito: AreaC (100,1,100,1)
+  areaServidor: AreaP(13,1,13,1)
+  area1: AreaP(10,1,10,1)
+  area2: AreaP(11,1,11,1)
+  area3: AreaP(12,1,12,1)
+robots
+  robot cliente
+  variables
+    cantidadRecibida,ID,miAv : numero
+  comenzar
+    RecibirMensaje(ID,R_Server)
+    miAv := PosAv
+    repetir 4
+      EnviarMensaje(ID,R_Server)
+      RecibirMensaje(cantidadRecibida,R_Server)
+      repetir cantidadRecibida
+        BloquearEsquina(100,1)
+        Pos(100,1)
+        tomarPapel
+        Pos(miAv,1)
+        LiberarEsquina(100,1)
+        depositarPapel
+  fin
+  robot servidor
+  variables
+    quienPide,cantidadPapeles : numero
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+    repetir 12
+      RecibirMensaje(quienPide,*)
+      Random(cantidadPapeles,1,5)
+      BloquearEsquina(100,1)
+      Pos(100,1)
+      repetir cantidadPapeles
+        depositarPapel
+      Pos(13,1)
+      LiberarEsquina(100,1)
+      si (quienPide = 1)
+        EnviarMensaje(cantidadPapeles,r1)
+      sino
+        si (quienPide = 2)
+          EnviarMensaje(cantidadPapeles,r2)
+        sino
+          EnviarMensaje(cantidadPapeles,r3)
+  fin
+variables
+  R_Server: servidor
+  r1,r2,r3: cliente
+comenzar
+  AsignarArea(R_Server, areaServidor)
+  AsignarArea(R_Server,deposito)
+  AsignarArea(r1,area1)
+  AsignarArea(r2,area2)
+  AsignarArea(r3,area3)
+  AsignarArea(r1,deposito)
+  AsignarArea(r2,deposito)
+  AsignarArea(r3,deposito)
+  Iniciar(r1,10,1)
+  Iniciar(r2,11,1)
+  Iniciar(r3,12,1)
+  Iniciar(R_Server, 13,1)
+fin
