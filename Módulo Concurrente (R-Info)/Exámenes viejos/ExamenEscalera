@@ -1,0 +1,168 @@
+{Dos robots recolectores, A y B, deben coordinarse para recolectar todas las flores de una escalera de 4 escalones, comenzando en la esquina (3,3). Cada escalon del robot A tendra un alto y un ancho aleatorios entre 2 y 5 esquinas. Cada escalon del robot B tendra un alto y un ancho aleatorios entre 3 y 6 esquinas. El robot A debe realizar un escalon, luego el robot B debe realizar el segundo escalon, a su termino el robot A hara el tercer escalon y finalmente el robot B completara el cuarto escalon.
+
+Cada vez que un robot completa un escalon, debe depositar de a una las flores en la esquina (1,5), y a continuacion un robot jefe debe juntar de una sola vez todas las flores recien depositadas.
+
+Una vez completada la escalera, el robot jefe debe informar que robot dejo mas flores en total en la esquina (1,5).
+
+El robot A inicia en la esquina (2,1), el robot B inicia en la esquina (3,1) y el robot jefe en la esquina (4,1).}
+
+programa ExamenEscalera
+procesos
+  proceso izquierda
+  comenzar
+    repetir 3
+      derecha
+  fin
+  proceso calcularPosicion(ES av : numero; ES ca : numero)
+  comenzar
+    av := PosAv
+    ca := PosCa
+    ca := ca + 1
+  fin
+  proceso depositarDeAUna(E flores : numero)
+  variables
+    miAv,miCa : numero
+  comenzar
+    miAv := PosAv
+    miCa := PosCa
+    repetir flores
+      BloquearEsquina(1,5)
+      Pos(1,5)
+      depositarFlor
+      Pos(miAv,miCa)
+      LiberarEsquina(1,5)
+  fin
+  proceso finalizarEscalonA(E flores: numero; ES av :numero; ES ca : numero; E ID : numero)
+  comenzar
+    calcularPosicion(av,ca)
+    EnviarMensaje(av,rb)
+    EnviarMensaje(ca,rb)
+    depositarDeAUna(flores)
+    EnviarMensaje(ID,R_Jefe)
+    EnviarMensaje(flores,R_Jefe)
+  fin
+  proceso finalizarEscalonB(E flores: numero; ES av :numero; ES ca : numero; E ID : numero)
+  comenzar
+    depositarDeAUna(flores)
+    EnviarMensaje(ID,R_Jefe)
+    EnviarMensaje(flores,R_Jefe)
+  fin
+  proceso limpiarDeFlores (ES f : numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      f := f + 1
+  fin
+  proceso limpiarDeposito (E f : numero)
+  comenzar
+    BloquearEsquina(1,5)
+    Pos(1,5)
+    repetir f
+      tomarFlor
+    Pos(4,1)
+    LiberarEsquina(1,5)
+  fin
+  proceso hacerEscalon(ES f : numero; E limInf : numero; E limSup : numero)
+  variables
+    ancho,alto : numero
+  comenzar
+    f := 0
+    Random(ancho,limInf,limSup)
+    Random(alto,limInf,limSup)
+    limpiarDeFlores(f)
+    repetir alto
+      mover
+      limpiarDeFlores(f)
+    derecha
+    repetir ancho
+      mover
+      limpiarDeFlores(f)
+    izquierda
+  fin
+areas
+  cuadrante: AreaPC (3,3,26,26)
+  deposito: AreaC (1,5,1,5)
+  areaA: AreaP(2,1,2,1)
+  areaB: AreaP(3,1,3,1)
+  areaJefe: AreaP(4,1,4,1)
+robots
+  robot robotA
+  variables
+    flores,av,ca,ID : numero
+  comenzar
+    Pos(3,3)
+    flores := 0
+    RecibirMensaje(ID,R_Jefe)
+    hacerEscalon(flores,2,5)
+    finalizarEscalonA(flores,av,ca,ID) 
+    RecibirMensaje(av,rb)
+    RecibirMensaje(ca,rb)
+    Pos(av,ca)
+    hacerEscalon(flores,2,5)
+    finalizarEscalonA(flores,av,ca,ID)    
+  fin
+  robot robotB
+  variables
+    flores,av,ca,ID : numero
+  comenzar
+    flores := 0
+    RecibirMensaje(ID,R_Jefe)
+    RecibirMensaje(av,ra)
+    RecibirMensaje(ca,ra)
+    Pos(av,ca)
+    hacerEscalon(flores,3,6)
+    av := PosAv
+    ca := PosCa
+    ca := ca + 1
+    EnviarMensaje(av,ra)
+    EnviarMensaje(ca,ra)
+    finalizarEscalonB(flores,av,ca,ID)  
+    RecibirMensaje(av,ra)
+    RecibirMensaje(ca,ra)
+    Pos(av,ca)
+    hacerEscalon(flores,3,6)
+    finalizarEscalonB(flores,av,ca,ID)  
+  fin
+  robot jefe
+  variables
+    ID,floresA,floresB,totalA,totalB : numero
+  comenzar
+    totalA := 0
+    totalB := 0
+    EnviarMensaje(1,ra)
+    EnviarMensaje(2,rb)
+    repetir 4
+      RecibirMensaje(ID,*)
+      si (ID = 1)
+        RecibirMensaje(floresA,ra)
+        totalA := totalA + floresA
+        limpiarDeposito(floresA)
+      sino
+        RecibirMensaje(floresB,rb)
+        totalB := totalB + floresB
+        limpiarDeposito(floresB)
+    si (totalA > totalB)
+      Informar("Gano el roboT A con ",totalA)
+    sino
+      si (totalA < totalB)
+        Informar("Gano el roboT B con ", totalB)
+      sino
+        Informar("Hubo un empate a ", totalB)
+  fin
+variables
+  ra : robotA
+  rb : robotB
+  R_Jefe : jefe
+comenzar
+  AsignarArea(R_Jefe, areaJefe)
+  AsignarArea(R_Jefe,deposito)
+  AsignarArea(ra,deposito)
+  AsignarArea(ra,areaA)
+  AsignarArea(rb,deposito)
+  AsignarArea(rb,areaB)
+  AsignarArea(ra,cuadrante)
+  AsignarArea(rb,cuadrante)
+  Iniciar(ra,2,1)
+  Iniciar(rb,3,1)
+  Iniciar(R_Jefe, 4,1)
+fin
