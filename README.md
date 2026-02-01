@@ -20,3 +20,6 @@
 - [Práctica 4 (Algoritmos y arquitecturas)](https://github.com/FranciscoBarberena/Taller-de-Programacion/tree/main/03%20-%20M%C3%B3dulo%20Concurrente%20(R-Info)/04%20-%20Pr%C3%A1ctica%204)
 - [Práctica 5 (Adicionales)](https://github.com/FranciscoBarberena/Taller-de-Programacion/tree/main/03%20-%20M%C3%B3dulo%20Concurrente%20(R-Info)/05%20-%20Pr%C3%A1ctica%205)
 - [Parciales resueltos](https://github.com/FranciscoBarberena/Taller-de-Programacion/tree/main/03%20-%20M%C3%B3dulo%20Concurrente%20(R-Info)/06%20-%20Ex%C3%A1menes%20viejos)
+
+## Cafecito
+- Si te sirvió este repositorio, podés [inviatrme a un Cafecito](https://cafecito.app/franciscobarberena). Gracias!
